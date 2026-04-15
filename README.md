@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KU Nisit Table
 
-## Getting Started
+KU Nisit Table คือเว็บแอปสำหรับช่วยนิสิตมหาวิทยาลัยเกษตรศาสตร์ดูตารางเรียนจากระบบ KU My Account ในรูปแบบที่อ่านง่ายและใช้งานสะดวก พร้อมหน้าล็อกอิน, หน้าตารางเรียนแบบกริด, และฟังก์ชันบันทึกตารางเป็นรูปภาพสำหรับนำไปใช้งานต่อได้ทันที
 
-First, run the development server:
+โปรเจกต์นี้เป็นเว็บแอปแบบไม่เป็นทางการ พัฒนาเพื่ออำนวยความสะดวกในการดูตารางเรียนเท่านั้น และไม่ได้มีความเกี่ยวข้องกับมหาวิทยาลัยเกษตรศาสตร์โดยตรง
+
+## ฟีเจอร์
+
+- ล็อกอินด้วยรหัสนิสิตและรหัสผ่านผ่าน API ของ KU
+- ดึงและแสดงตารางเรียนเป็นกริดรายวันและรายช่วงเวลา
+- รองรับการแปลงข้อมูลตารางจากโครงสร้าง API หลายรูปแบบ
+- ตรวจจับปีการศึกษาและภาคการศึกษาที่ตอบกลับจากระบบต้นทาง
+- ส่งคำสั่ง resync ข้อมูลโปรไฟล์เพื่อให้แสดงผลล่าสุด
+- บันทึกตารางเรียนเป็นไฟล์ภาพ PNG
+- ใช้คุกกี้แบบชั่วคราวสำหรับเก็บ session ของผู้ใช้งานในเบราว์เซอร์
+
+## เทคโนโลยีที่ใช้
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- html-to-image สำหรับส่งออกตารางเป็นรูปภาพ
+
+## ความต้องการ
+
+- Node.js 20 หรือใหม่กว่า
+- npm
+- ค่า environment สำหรับเชื่อมต่อระบบ KU
+
+## การตั้งค่า
+
+สร้างไฟล์ `.env.local` ที่รากโปรเจกต์ แล้วกำหนดค่าต่อไปนี้
+
+```env
+KU_APP_KEY=your_app_key
+KU_PUBLIC_KEY=your_public_key
+
+KU_BASE_URL=https://my.ku.th
+KU_LOGIN_URL=https://my.ku.th/myku/api/v2/user-login/login
+KU_GROUP_COURSE_URL=https://my.ku.th/myku/api/std-profile/getGroupCourse
+KU_PUBLIC_CBP_URL=https://my.ku.th/myku/api/common/publicCBP
+KU_ORIGIN=https://my.ku.th
+KU_REFERER=https://my.ku.th/
+```
+
+ตัวแปรที่จำเป็นจริงสำหรับการเข้าสู่ระบบคือ `KU_APP_KEY` และ `KU_PUBLIC_KEY` ส่วนตัวแปรอื่นสามารถปล่อยให้โปรแกรมใช้ค่าเริ่มต้นได้ หากระบบของคุณต้องการชี้ไปยัง endpoint อื่น
+
+## เริ่มใช้งาน
+
+ติดตั้ง dependencies
+
+```bash
+npm install
+```
+
+เริ่มเซิร์ฟเวอร์สำหรับพัฒนา
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+จากนั้นเปิดเว็บที่ [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## สคริปต์ที่มีให้ใช้
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-## Learn More
+## วิธีใช้งาน
 
-To learn more about Next.js, take a look at the following resources:
+1. เปิดหน้า Login แล้วเข้าสู่ระบบด้วยรหัสนิสิตและรหัสผ่าน
+2. ระบบจะพาไปยังหน้าตารางเรียนอัตโนมัติเมื่อยืนยันตัวตนสำเร็จ
+3. สามารถกดปุ่มบันทึกตารางเป็นรูปภาพเพื่อดาวน์โหลดไฟล์ PNG ได้
+4. หากต้องการดึงข้อมูลล่าสุดจากฝั่ง KU สามารถใช้ query `resync=1` ตามที่หน้าตารางรองรับ
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## โครงสร้างโปรเจกต์
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `app/` หน้าเว็บ, route ของ API, และ metadata ของ Next.js
+- `components/` ส่วนประกอบ UI และ feature หลัก
+- `hooks/` logic สำหรับฟอร์มและ client state
+- `lib/` helper สำหรับคุยกับระบบ KU และ utility อื่น ๆ
+- `types/` type definitions ที่ใช้ร่วมกัน
+- `public/` assets เช่น font และรูปภาพ
 
-## Deploy on Vercel
+## หมายเหตุสำคัญ
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- โปรเจกต์นี้ไม่มีฐานข้อมูลของตัวเอง และไม่ได้เก็บข้อมูลล็อกอินของผู้ใช้ไว้ในระบบของแอป
+- ข้อมูลรหัสนิสิตและรหัสผ่านจะถูกส่งไปยังระบบของ KU เพื่อยืนยันตัวตน และ session จะถูกเก็บไว้ชั่วคราวในคุกกี้ของเบราว์เซอร์เท่านั้น
+- ตารางเรียนที่แสดงผลมาจากข้อมูลที่ระบบ KU ตอบกลับมาโดยตรง จึงอาจเปลี่ยนแปลงได้ตามข้อมูลต้นทาง
+- ถ้าพบปัญหาการใช้งาน สามารถเปิด issue ใน GitHub repository ของโปรเจกต์ได้
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## การนำขึ้นใช้งานจริง
+
+โครงสร้างโปรเจกต์รองรับการ deploy บนแพลตฟอร์มที่รองรับ Next.js โดยตรง เช่น Vercel หรือเซิร์ฟเวอร์ที่ติดตั้ง Node.js ไว้แล้ว
+
+ก่อน deploy ควรตรวจสอบว่า environment variables ครบถ้วน และทดสอบคำสั่ง build ให้ผ่าน
+
+```bash
+npm run build
+```
