@@ -44,8 +44,6 @@ KU_ORIGIN=https://my.ku.th
 KU_REFERER=https://my.ku.th/
 ```
 
-ตัวแปรที่จำเป็นจริงสำหรับการเข้าสู่ระบบคือ `KU_APP_KEY` และ `KU_PUBLIC_KEY` ส่วนตัวแปรอื่นสามารถปล่อยให้โปรแกรมใช้ค่าเริ่มต้นได้ หากระบบของคุณต้องการชี้ไปยัง endpoint อื่น
-
 ## เริ่มใช้งาน
 
 ติดตั้ง dependencies
@@ -103,17 +101,3 @@ npm run lint
 ```bash
 npm run build
 ```
-
-## CI/CD
-
-โปรเจกต์นี้มี GitHub Actions workflow สำหรับตรวจ `lint` และ `build` อัตโนมัติเมื่อมี `push` หรือ `pull request` ไปยัง `main`
-
-เมื่อ `push` เข้าสู่ `main` workflow จะ deploy ขึ้น Vercel ให้โดยอัตโนมัติ หากตั้งค่า secrets ครบถ้วน
-
-Secrets ที่ต้องมีใน GitHub repository มีดังนี้
-
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-
-ถ้ายังไม่ได้ตั้งค่า secrets ส่วน deploy จะรันไม่ผ่าน แต่ส่วนตรวจ `lint` และ `build` ยังทำงานได้ตามปกติ
