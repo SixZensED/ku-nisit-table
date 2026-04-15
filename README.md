@@ -103,3 +103,17 @@ npm run lint
 ```bash
 npm run build
 ```
+
+## CI/CD
+
+โปรเจกต์นี้มี GitHub Actions workflow สำหรับตรวจ `lint` และ `build` อัตโนมัติเมื่อมี `push` หรือ `pull request` ไปยัง `main`
+
+เมื่อ `push` เข้าสู่ `main` workflow จะ deploy ขึ้น Vercel ให้โดยอัตโนมัติ หากตั้งค่า secrets ครบถ้วน
+
+Secrets ที่ต้องมีใน GitHub repository มีดังนี้
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+ถ้ายังไม่ได้ตั้งค่า secrets ส่วน deploy จะรันไม่ผ่าน แต่ส่วนตรวจ `lint` และ `build` ยังทำงานได้ตามปกติ
