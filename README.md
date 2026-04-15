@@ -37,9 +37,9 @@ KU_APP_KEY=your_app_key
 KU_PUBLIC_KEY=your_public_key
 
 KU_BASE_URL=https://my.ku.th
-KU_LOGIN_URL=https://my.ku.th/myku/api/v2/user-login/login
-KU_GROUP_COURSE_URL=https://my.ku.th/myku/api/std-profile/getGroupCourse
-KU_PUBLIC_CBP_URL=https://my.ku.th/myku/api/common/publicCBP
+KU_LOGIN_URL=https://my.ku.th/xxxxxxx
+KU_GROUP_COURSE_URL=https://my.ku.th/xxxxxxx
+KU_PUBLIC_CBP_URL=https://my.ku.th/xxxxxxx
 KU_ORIGIN=https://my.ku.th
 KU_REFERER=https://my.ku.th/
 ```
