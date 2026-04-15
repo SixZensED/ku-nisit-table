@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { getSiteUrl } from "../lib/seo";
+import { ConsoleWarning } from "@/components/ui/console-warning";
 
 const siteUrl = getSiteUrl();
 
@@ -89,6 +90,7 @@ export default function RootLayout({
   return (
     <html lang="th" className="h-full antialiased">
       <body className="line-seed-font min-h-full flex flex-col">
+        <ConsoleWarning />
         <Script
           id="website-structured-data"
           type="application/ld+json"
