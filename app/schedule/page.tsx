@@ -519,6 +519,7 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
 
   let displayedEventsByDay: EventBlock[][] = Array.from({ length: 7 }, () => []);
   let resyncStatus: "idle" | "success" | "failed" = "idle";
+  let fetchErrorMessage: string | null = null;
 
   if (forceResync) {
     try {
@@ -529,10 +530,37 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
     }
   }
 
-  const scheduleData = await fetchKuGroupCourse({
-    academicYear: year,
-    semester,
-  });
+  let scheduleData: unknown = null;
+
+  try {
+    scheduleData = await fetchKuGroupCourse({
+      academicYear: year,
+      semester,
+    });
+  } catch (error) {
+    fetchErrorMessage =
+      error instanceof Error
+        ? error.message === "Failed to fetch group course data"
+          ? "ดึงข้อมูลตารางเรียนไม่สำเร็จ ลองรีเฟรชหน้า หรือตรวจสอบการเข้าสู่ระบบอีกครั้ง"
+          : error.message
+        : "ดึงข้อมูลตารางเรียนไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง";
+  }
+
+  if (!scheduleData) {
+    return (
+      <ScheduleBoard
+        year={year}
+        semester={semester}
+        rawRowsCount={0}
+        parsedEventCount={0}
+        displayedEventsByDay={displayedEventsByDay}
+        responsePeriod={null}
+        periodMismatch={false}
+        resyncStatus={resyncStatus}
+        fetchErrorMessage={fetchErrorMessage}
+      />
+    );
+  }
 
   const rawRows = getCourseRows(scheduleData);
   const normalized = toEventsByDay(scheduleData);
@@ -556,6 +584,7 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
       responsePeriod={responsePeriod}
       periodMismatch={periodMismatch}
       resyncStatus={resyncStatus}
+      fetchErrorMessage={fetchErrorMessage}
     />
   );
 }

@@ -63,6 +63,7 @@ type ScheduleBoardProps = {
   responsePeriod: { year: number; semester: number } | null;
   periodMismatch: boolean;
   resyncStatus: "idle" | "success" | "failed";
+  fetchErrorMessage?: string | null;
 };
 
 const DAYS: DayConfig[] = [
@@ -434,6 +435,7 @@ export function ScheduleBoard({
   responsePeriod,
   periodMismatch,
   resyncStatus,
+  fetchErrorMessage,
 }: ScheduleBoardProps) {
   const tableSectionRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
@@ -613,6 +615,12 @@ export function ScheduleBoard({
         </div>
 
         <div className="relative z-10">
+          {fetchErrorMessage ? (
+            <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm">
+              {fetchErrorMessage}
+            </div>
+          ) : null}
+
           {resyncStatus === "success" ? (
             <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50/95 px-4 py-3 text-sm text-emerald-900 shadow-sm">
               สั่ง KU Resync สำเร็จแล้ว และกำลังแสดงข้อมูลล่าสุดจากระบบ
@@ -698,20 +706,36 @@ export function ScheduleBoard({
                                 bottom: 2,
                               }}
                             >
-                              <div className="flex h-full min-h-[94px] flex-col justify-between gap-1.5 text-left text-[10px] leading-tight text-neutral-950">
-                                <div className="flex items-start justify-between gap-2 text-[10px] font-semibold uppercase tracking-tight text-neutral-700/80">
+                              <div className="flex h-full min-h-[82px] flex-col justify-between gap-1 sm:min-h-[94px] sm:gap-1.5 text-left text-[9px] leading-tight text-neutral-950 sm:text-[10px]">
+                                <div className="flex min-w-0 items-start justify-between gap-2 text-[9px] font-semibold uppercase tracking-tight text-neutral-700/80 sm:text-[10px]">
                                   <span className="truncate whitespace-nowrap">{event.code || ""}</span>
                                   <span className="shrink-0">{event.timeLabel}</span>
                                 </div>
 
-                                <div className="flex-1 py-0.5 text-left">
+                                <div className="flex-1 min-h-0 py-0.25 text-left sm:py-0.5">
                                   {selectedLanguage === "th" ? (
                                     <>
-                                      <div className="text-[12px] font-semibold leading-snug text-neutral-950">
+                                      <div
+                                        className="break-words text-[11px] font-semibold leading-snug text-neutral-950 sm:text-[12px]"
+                                        style={{
+                                          display: "-webkit-box",
+                                          WebkitBoxOrient: "vertical",
+                                          WebkitLineClamp: 2,
+                                          overflow: "hidden",
+                                        }}
+                                      >
                                         {event.title}
                                       </div>
                                       {event.titleEn ? (
-                                        <div className="mt-0.5 text-[11px] font-medium leading-snug text-neutral-700/80">
+                                        <div
+                                          className="mt-0.5 break-words text-[9px] font-medium leading-snug text-neutral-700/80 sm:text-[11px]"
+                                          style={{
+                                            display: "-webkit-box",
+                                            WebkitBoxOrient: "vertical",
+                                            WebkitLineClamp: 2,
+                                            overflow: "hidden",
+                                          }}
+                                        >
                                           {event.titleEn}
                                         </div>
                                       ) : null}
@@ -719,18 +743,34 @@ export function ScheduleBoard({
                                   ) : (
                                     <>
                                       {event.titleEn ? (
-                                        <div className="text-[12px] font-semibold leading-snug text-neutral-950">
+                                        <div
+                                          className="break-words text-[11px] font-semibold leading-snug text-neutral-950 sm:text-[12px]"
+                                          style={{
+                                            display: "-webkit-box",
+                                            WebkitBoxOrient: "vertical",
+                                            WebkitLineClamp: 2,
+                                            overflow: "hidden",
+                                          }}
+                                        >
                                           {event.titleEn}
                                         </div>
                                       ) : null}
-                                      <div className="mt-0.5 text-[11px] font-medium leading-snug text-neutral-700/80">
+                                      <div
+                                        className="mt-0.5 break-words text-[9px] font-medium leading-snug text-neutral-700/80 sm:text-[11px]"
+                                        style={{
+                                          display: "-webkit-box",
+                                          WebkitBoxOrient: "vertical",
+                                          WebkitLineClamp: 2,
+                                          overflow: "hidden",
+                                        }}
+                                      >
                                         {event.title}
                                       </div>
                                     </>
                                   )}
                                 </div>
 
-                                <div className="flex items-end justify-between gap-2 text-[10px] font-medium uppercase text-neutral-700/80">
+                                <div className="flex items-end justify-between gap-2 text-[9px] font-medium uppercase text-neutral-700/80 sm:text-[10px]">
                                   <span className="truncate">{event.room}</span>
                                   <span className="shrink-0 font-semibold text-neutral-800">
                                     {event.type}
