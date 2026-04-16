@@ -756,7 +756,7 @@ export function ScheduleBoard({
             className={`inline-flex h-11 items-center rounded-full px-5 text-sm font-bold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none ${activeTheme.actionButton}`}
           >
             {isExporting ? (
-              "กำลังเซฟ..."
+              "กำลังเซฟรูปภาพ..."
             ) : (
               <span className="inline-flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">

@@ -577,6 +577,14 @@ function toEventsByDay(rawData: unknown): EventBlock[][] {
       continue;
     }
 
+    // Defensive: skip if dayIndex, endMinute or startMinute is null (should not happen, but for type safety)
+    if (
+      parsed.dayIndex === null ||
+      parsed.endMinute === null ||
+      parsed.startMinute === null
+    ) {
+      continue;
+    }
     const event: EventBlock = {
       start: parsed.startIndex,
       span: Math.max(1, Math.ceil((parsed.endMinute - parsed.startMinute) / 60)),
@@ -730,6 +738,7 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
         rawRowsCount={0}
         parsedEventCount={0}
         displayedEventsByDay={displayedEventsByDay}
+        unscheduledCourses={[]}
         responsePeriod={null}
         periodMismatch={false}
         resyncStatus={resyncStatus}
@@ -760,7 +769,6 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
       rawRowsCount={rawRows.length}
       parsedEventCount={parsedEventCount}
       displayedEventsByDay={displayedEventsByDay}
-      unscheduledCourses={unscheduledCourses}
       unscheduledCourses={unscheduledCourses}
       responsePeriod={responsePeriod}
       periodMismatch={periodMismatch}
