@@ -20,7 +20,17 @@ export const metadata: Metadata = {
     "KU timetable",
     "ตารางเรียน มก",
     "ตารางเรียนเกษตร",
+    "ตารางเรียน มหาวิทยาลัยเกษตรศาสตร์",
+    "เช็คตารางเรียน KU",
+    "KU schedule 2568",
+    "myKU ตารางเรียน",
+    "ตารางสอน นิสิต เกษตรศาสตร์",
+    "ku nisit schedule",
+    "ตาราง เรียน นิสิต",
   ],
+  verification: {
+    google: "G10rl1vL4FNBlvSky51FIZt1jtHasMwQPA4MQI",
+  },
   alternates: {
     canonical: "/",
   },
