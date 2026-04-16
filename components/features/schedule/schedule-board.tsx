@@ -55,12 +55,24 @@ type EventBlock = {
   color: string;
 };
 
+type UnscheduledCourse = {
+  code: string;
+  title: string;
+  titleEn: string;
+  room: string;
+  type: string;
+  teacherName: string;
+  teacherNameEn: string;
+  periodLabel: string;
+};
+
 type ScheduleBoardProps = {
   year: number;
   semester: number;
   rawRowsCount: number;
   parsedEventCount: number;
   displayedEventsByDay: EventBlock[][];
+  unscheduledCourses: UnscheduledCourse[];
   responsePeriod: { year: number; semester: number } | null;
   periodMismatch: boolean;
   resyncStatus: "idle" | "success" | "failed";
@@ -353,6 +365,22 @@ type DropdownOption<T extends string> = {
   label: string;
 };
 
+function resolveBoardTheme(value: string | null): BoardTheme {
+  if (value && value in BOARD_THEMES) {
+    return value as BoardTheme;
+  }
+
+  return "forest";
+}
+
+function resolveBoardLanguage(value: string | null): BoardLanguage {
+  if (value === "th" || value === "en") {
+    return value;
+  }
+
+  return "th";
+}
+
 type FancyDropdownProps<T extends string> = {
   title: string;
   value: T;
@@ -433,6 +461,7 @@ export function ScheduleBoard({
   rawRowsCount,
   parsedEventCount,
   displayedEventsByDay,
+  unscheduledCourses,
   responsePeriod,
   periodMismatch,
   resyncStatus,
@@ -443,35 +472,56 @@ export function ScheduleBoard({
   const tableSectionRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<BoardTheme>("forest");
-  const [selectedLanguage, setSelectedLanguage] = useState<BoardLanguage>("th");
+  const [selectedTheme, setSelectedTheme] = useState<BoardTheme>(() =>
+    resolveBoardTheme(searchParams.get("theme")),
+  );
+  const [selectedLanguage, setSelectedLanguage] = useState<BoardLanguage>(() =>
+    resolveBoardLanguage(searchParams.get("language")),
+  );
   const [openMenu, setOpenMenu] = useState<"language" | "theme" | "period" | null>(null);
+
+  const periodLabelMap =
+    selectedLanguage === "th"
+      ? {
+          summer: "ภาคฤดูร้อน",
+          semester1: "ภาคต้น",
+          semester2: "ภาคปลาย",
+          period: "ภาคเรียน",
+          defaultPeriod: "ภาคเรียน",
+        }
+      : {
+          summer: "Summer",
+          semester1: "Semester 1",
+          semester2: "Semester 2",
+          period: "Period",
+          defaultPeriod: "Period",
+        };
 
   // Generate available periods
   const generateAvailablePeriods = () => {
     const periods: Array<{ year: number; semester: number; label: string }> = [];
     const currentDate = new Date();
     const currentAcademicYear = currentDate.getFullYear() + 543;
-    
+
     // Generate from current year backwards 3 years
     for (let y = currentAcademicYear; y >= currentAcademicYear - 3; y--) {
       // Summer (semester 0)
       periods.push({
         year: y,
         semester: 0,
-        label: `${y} Summer (ฤดูร้อน)`,
+        label: `${y} ${periodLabelMap.summer}`,
       });
       // Semester 1
       periods.push({
         year: y,
         semester: 1,
-        label: `${y} Semester 1 (เทอม 1)`,
+        label: `${y} ${periodLabelMap.semester1}`,
       });
       // Semester 2
       periods.push({
         year: y,
         semester: 2,
-        label: `${y} Semester 2 (เทอม 2)`,
+        label: `${y} ${periodLabelMap.semester2}`,
       });
     }
 
@@ -481,16 +531,40 @@ export function ScheduleBoard({
   const availablePeriods = generateAvailablePeriods();
   const currentPeriodLabel = availablePeriods.find(
     (p) => p.year === year && p.semester === semester
-  )?.label || `${year} Period`;
+  )?.label || `${year} ${periodLabelMap.defaultPeriod}`;
 
   const handlePeriodSelect = (selectedYear: number, selectedSemester: number) => {
     const params = new URLSearchParams(searchParams);
     params.set("year", String(selectedYear));
     params.set("semester", String(selectedSemester));
+    params.set("theme", selectedTheme);
+    params.set("language", selectedLanguage);
     params.set("resync", "1"); // Force resync
     const newUrl = `/schedule?${params.toString()}`;
     // Use window.location for hard refresh
     window.location.href = newUrl;
+    setOpenMenu(null);
+  };
+
+  const handleLanguageSelect = (value: BoardLanguage) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("theme", selectedTheme);
+    params.set("language", value);
+    params.set("year", String(year));
+    params.set("semester", String(semester));
+    router.replace(`/schedule?${params.toString()}`);
+    setSelectedLanguage(value);
+    setOpenMenu(null);
+  };
+
+  const handleThemeSelect = (value: BoardTheme) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("theme", value);
+    params.set("language", selectedLanguage);
+    params.set("year", String(year));
+    params.set("semester", String(semester));
+    router.replace(`/schedule?${params.toString()}`);
+    setSelectedTheme(value);
     setOpenMenu(null);
   };
 
@@ -656,10 +730,7 @@ export function ScheduleBoard({
             }))}
             open={openMenu === "language"}
             onToggle={() => setOpenMenu((current) => (current === "language" ? null : "language"))}
-            onSelect={(value) => {
-              setSelectedLanguage(value);
-              setOpenMenu(null);
-            }}
+            onSelect={handleLanguageSelect}
             buttonClassName="inline-flex h-11 items-center gap-2 rounded-full border border-cyan-200/70 bg-gradient-to-r from-white via-cyan-50 to-white px-4 text-sm font-semibold text-neutral-700 shadow-[0_10px_24px_-16px_rgba(14,165,233,0.45)] backdrop-blur-sm transition hover:-translate-y-[1px] hover:shadow-[0_14px_28px_-18px_rgba(14,165,233,0.55)]"
             menuClassName="border-cyan-200/60"
           />
@@ -673,10 +744,7 @@ export function ScheduleBoard({
             }))}
             open={openMenu === "theme"}
             onToggle={() => setOpenMenu((current) => (current === "theme" ? null : "theme"))}
-            onSelect={(value) => {
-              setSelectedTheme(value);
-              setOpenMenu(null);
-            }}
+            onSelect={handleThemeSelect}
             buttonClassName="inline-flex h-11 items-center gap-2 rounded-full border border-emerald-200/70 bg-gradient-to-r from-white via-emerald-50 to-white px-4 text-sm font-semibold text-neutral-700 shadow-[0_10px_24px_-16px_rgba(16,185,129,0.45)] backdrop-blur-sm transition hover:-translate-y-[1px] hover:shadow-[0_14px_28px_-18px_rgba(16,185,129,0.55)]"
             menuClassName="border-emerald-200/60"
           />
@@ -713,6 +781,51 @@ export function ScheduleBoard({
           >
             <div className="overflow-x-auto lg:overflow-x-visible">
               <div className="min-w-[1200px] p-1.5 sm:p-2.5 lg:min-w-0 lg:p-3">
+                {unscheduledCourses.length > 0 ? (
+                  <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-base text-amber-900 shadow-sm">
+                    <div className="text-[15px] font-semibold">
+                      {selectedLanguage === "th"
+                        ? "รายวิชาที่ ไม่มีวัน/เวลาให้วางในตาราง"
+                        : "Courses with no day/time available for the timetable"}
+                    </div>
+                    <div className="mt-2 grid gap-2">
+                      {unscheduledCourses.map((course) => (
+                        <div
+                          key={`${course.code}-${course.title}-${course.room}`}
+                          className="rounded-lg border border-amber-200/80 bg-white px-3 py-2 text-sm text-amber-950"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="text-[15px] font-semibold">{course.code || course.title}</span>
+                            <span className="text-xs uppercase text-amber-700">{course.type}</span>
+                          </div>
+                          {selectedLanguage === "th" ? (
+                            <>
+                              <div className="mt-1 text-[15px] font-medium text-neutral-900">{course.title}</div>
+                              {course.titleEn ? (
+                                <div className="text-xs text-neutral-600">{course.titleEn}</div>
+                              ) : null}
+                            </>
+                          ) : (
+                            <>
+                              {course.titleEn ? (
+                                <div className="mt-1 text-[15px] font-medium text-neutral-900">{course.titleEn}</div>
+                              ) : null}
+                              <div className="text-xs text-neutral-600">{course.title}</div>
+                            </>
+                          )}
+                          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm text-neutral-700">
+                            <span>
+                              {selectedLanguage === "th"
+                                ? `ติดต่ออาจารย์ผู้สอน ${course.teacherName}`
+                                : `Contact instructor ${course.teacherNameEn}`}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className={`grid grid-cols-[96px_repeat(12,minmax(90px,1fr))] gap-px p-px lg:grid-cols-[96px_repeat(12,minmax(0,1fr))] ${activeTheme.gridBorder}`}>
                   <div className={`px-3 py-2 text-left text-xs font-bold uppercase text-white ${activeTheme.headerBg}`}>
                     Day / Time

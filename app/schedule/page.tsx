@@ -73,6 +73,30 @@ type NormalizedScheduleSource = {
   schedule?: unknown;
 };
 
+type ParsedEventRecord = {
+  dayIndex: number | null;
+  startMinute: number | null;
+  endMinute: number | null;
+  startIndex: number;
+  code: string;
+  title: string;
+  titleEn: string;
+  room: string;
+  type: string;
+  timeLabel: string;
+};
+
+type UnscheduledCourse = {
+  code: string;
+  title: string;
+  titleEn: string;
+  room: string;
+  type: string;
+  teacherName: string;
+  teacherNameEn: string;
+  periodLabel: string;
+};
+
 const DAY_COLOR_FALLBACKS = [
   "bg-[#fff0d9]",
   "bg-[#ffe0e0]",
@@ -161,6 +185,24 @@ function resolveDayIndex(value: unknown) {
 
   const matchedIndex = DAYS.findIndex((day) => text.includes(day.label));
   return matchedIndex >= 0 ? matchedIndex : null;
+}
+
+function resolveDayIndexFromNumberLike(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const rounded = Math.floor(value);
+
+    if (rounded >= 1 && rounded <= 7) {
+      return rounded - 1;
+    }
+  }
+
+  const text = asText(value);
+
+  if (/^[1-7]$/.test(text)) {
+    return Number(text) - 1;
+  }
+
+  return null;
 }
 
 function resolveTimeIndex(value: unknown) {
@@ -266,6 +308,223 @@ function resolveDayFromWeekString(value: unknown) {
   return resolveDayIndex(value);
 }
 
+function resolveEventRecord(record: RawCourseRecord): ParsedEventRecord | null {
+  const dayIndex =
+    resolveDayFromWeekString(findField(record, ["day_w", "day_w_c", "day_code", "weekDayCode"])) ??
+    resolveDayIndex(
+      findField(record, [
+        "day",
+        "dayOfWeek",
+        "weekDay",
+        "weekday",
+        "dayName",
+        "dayNo",
+        "day_code",
+        "dayIndex",
+        "meetingDay",
+        "scheduleDay",
+      ]),
+    ) ??
+    resolveDayIndexFromNumberLike(findField(record, ["day_no", "weekday_no", "dayIndexNo"]));
+
+  const startValue = findField(record, [
+    "time_start",
+    "startTime",
+    "timeStart",
+    "start",
+    "beginTime",
+    "fromTime",
+    "begin",
+    "timeFrom",
+    "startHour",
+    "start_time",
+    "time_begin",
+    "start_minute",
+  ]);
+
+  const fallbackStartValue = findField(record, [
+    "time",
+    "slotStart",
+    "timeFromText",
+    "period",
+    "time_from",
+    "time_from_text",
+    "startTimeText",
+    "start_text",
+  ]);
+
+  const endValue = findField(record, [
+    "endTime",
+    "timeEnd",
+    "end",
+    "toTime",
+    "finishTime",
+    "time_to",
+    "time_to_text",
+    "end_text",
+    "finish_time",
+  ]);
+
+  const startMinute = resolveMinuteOffset(startValue) ?? resolveMinuteOffset(fallbackStartValue);
+  const endMinuteRaw = resolveMinuteOffset(endValue);
+
+  if (dayIndex === null || startMinute === null) {
+    return null;
+  }
+
+  const endMinute =
+    endMinuteRaw !== null && endMinuteRaw > startMinute
+      ? endMinuteRaw
+      : Math.min(startMinute + 60, GRID_TOTAL_MINUTES);
+  const startIndex = Math.floor(startMinute / 60);
+
+  const title =
+    asText(
+      findField(record, [
+        "subject_name_th",
+        "subjectName",
+        "courseName",
+        "name",
+        "subject",
+        "courseTitle",
+        "subject_title_th",
+        "subject_title",
+        "course_title",
+      ]),
+    ) ||
+    asText(findField(record, ["subject_name_en", "subjectCode", "courseCode", "subject_code_en"])) ||
+    asText(findField(record, ["subjectCode", "courseCode", "subject_code"])) ||
+    "Class";
+
+  const titleEn =
+    asText(findField(record, ["subject_name_en", "subjectNameEn", "courseNameEn", "subject_title_en"])) ||
+    "";
+
+  const code = asText(findField(record, ["subject_code", "subjectCode", "courseCode", "subjectCodeEn"])) || "";
+
+  const room =
+    asText(
+      findField(record, [
+        "room_name_th",
+        "room_name_en",
+        "room",
+        "classRoom",
+        "location",
+        "classroom",
+        "roomName",
+        "room_no",
+        "roomNo",
+      ]),
+    ) ||
+    "ROOM";
+
+  const timeFrom =
+    asText(findField(record, ["time_from", "timeFrom", "startTimeText", "start_text"])) ||
+    (typeof findField(record, ["time_start"]) === "number"
+      ? `${Math.floor(Number(findField(record, ["time_start"])) / 60)}:${String(Number(findField(record, ["time_start"])) % 60).padStart(2, "0")}`
+      : "");
+
+  const timeTo = asText(findField(record, ["time_to", "timeTo", "endTimeText", "end_text"]));
+  const timeLabel = timeFrom || timeTo ? `[${timeFrom || ""}${timeFrom && timeTo ? " - " : ""}${timeTo || ""}]` : "";
+
+  const type =
+    asText(
+      findField(record, [
+        "section_type_en",
+        "section_type_th",
+        "type",
+        "lectureType",
+        "classType",
+        "subjectType",
+        "sessionType",
+        "sectionType",
+      ]),
+    ) ||
+    "Lecture";
+
+  return {
+    dayIndex,
+    startMinute,
+    endMinute,
+    startIndex,
+    code,
+    title,
+    titleEn,
+    room,
+    type,
+    timeLabel,
+  };
+}
+
+function resolveUnscheduledCourse(record: RawCourseRecord): UnscheduledCourse {
+  const code = asText(findField(record, ["subject_code", "subjectCode", "courseCode", "subjectCodeEn"]));
+  const title =
+    asText(
+      findField(record, [
+        "subject_name_th",
+        "subjectName",
+        "courseName",
+        "name",
+        "subject",
+        "courseTitle",
+        "subject_title_th",
+        "subject_title",
+        "course_title",
+      ]),
+    ) || code || "Class";
+  const titleEn =
+    asText(findField(record, ["subject_name_en", "subjectNameEn", "courseNameEn", "subject_title_en"])) || "";
+  const room =
+    asText(
+      findField(record, [
+        "room_name_th",
+        "room_name_en",
+        "room",
+        "classRoom",
+        "location",
+        "classroom",
+        "roomName",
+        "room_no",
+        "roomNo",
+      ]),
+    ) ||
+    "ROOM";
+  const type =
+    asText(
+      findField(record, [
+        "section_type_en",
+        "section_type_th",
+        "type",
+        "lectureType",
+        "classType",
+        "subjectType",
+        "sessionType",
+        "sectionType",
+      ]),
+    ) ||
+    "Lecture";
+  const teacherName =
+    asText(findField(record, ["teacher_name", "teacherName", "instructor_name", "instructorName"])) ||
+    "ติดต่อผู้สอน";
+  const teacherNameEn =
+    asText(findField(record, ["teacher_name_en", "teacherNameEn", "instructor_name_en", "instructorNameEn"])) ||
+    "Contact teacher";
+  const periodLabel =
+    asText(findField(record, ["groupheader", "peroid_date", "period_date", "weekstartday"])) ||
+    "No weekly time";
+
+  return {
+    code,
+    title,
+    titleEn,
+    room,
+    type,
+    teacherName,
+    teacherNameEn,
+    periodLabel,
+  };
+}
+
 function collectCandidateArrays(value: unknown, depth = 0): RawCourseRecord[][] {
   if (!value || depth > 3) {
     return [];
@@ -312,113 +571,27 @@ function toEventsByDay(rawData: unknown): EventBlock[][] {
   const grouped: EventBlock[][] = Array.from({ length: 7 }, () => []);
 
   for (const record of records) {
-    const dayIndex =
-      resolveDayFromWeekString(findField(record, ["day_w", "day_w_c"])) ??
-      resolveDayIndex(
-        findField(record, [
-          "day",
-          "dayOfWeek",
-          "weekDay",
-          "weekday",
-          "dayName",
-          "dayNo",
-          "meetingDay",
-          "scheduleDay",
-        ]),
-      );
+    const parsed = resolveEventRecord(record);
 
-    const startValue = findField(record, [
-      "time_start",
-      "startTime",
-      "timeStart",
-      "start",
-      "beginTime",
-      "fromTime",
-      "begin",
-      "timeFrom",
-      "startHour",
-    ]);
-
-    const fallbackStartValue = findField(record, ["time", "slotStart", "timeFromText", "period", "time_from"]);
-    const endValue = findField(record, ["endTime", "timeEnd", "end", "toTime", "finishTime", "time_to"]);
-
-    const startMinute = resolveMinuteOffset(startValue) ?? resolveMinuteOffset(fallbackStartValue);
-    const endMinuteRaw = resolveMinuteOffset(endValue);
-
-    if (dayIndex === null || startMinute === null) {
+    if (parsed === null) {
       continue;
     }
 
-    const endMinute =
-      endMinuteRaw !== null && endMinuteRaw > startMinute
-        ? endMinuteRaw
-        : Math.min(startMinute + 60, GRID_TOTAL_MINUTES);
-    const startIndex = Math.floor(startMinute / 60);
-
-    const title =
-      asText(
-        findField(record, [
-          "subject_name_th",
-          "subjectName",
-          "courseName",
-          "name",
-          "subject",
-          "courseTitle",
-        ]),
-      ) ||
-      asText(findField(record, ["subject_name_en", "subjectCode", "courseCode"])) ||
-      asText(findField(record, ["subjectCode", "courseCode"])) ||
-      "Class";
-
-    const titleEn =
-      asText(findField(record, ["subject_name_en", "subjectNameEn", "courseNameEn"])) || "";
-
-    const code =
-      asText(findField(record, ["subject_code", "subjectCode", "courseCode"])) || "";
-
-    const room =
-      asText(
-        findField(record, ["room_name_th", "room_name_en", "room", "classRoom", "location", "classroom", "roomName"]),
-      ) ||
-      "ROOM";
-
-    const timeFrom = asText(findField(record, ["time_from", "timeFrom", "startTimeText"])) ||
-      (typeof findField(record, ["time_start"]) === "number"
-        ? `${Math.floor(Number(findField(record, ["time_start"])) / 60)}:${String(Number(findField(record, ["time_start"])) % 60).padStart(2, "0")}`
-        : "");
-
-    const timeTo = asText(findField(record, ["time_to", "timeTo", "endTimeText"]));
-    const timeLabel = timeFrom || timeTo ? `[${timeFrom || ""}${timeFrom && timeTo ? " - " : ""}${timeTo || ""}]` : "";
-
-    const type =
-      asText(
-        findField(record, [
-          "section_type_en",
-          "section_type_th",
-          "type",
-          "lectureType",
-          "classType",
-          "subjectType",
-          "sessionType",
-        ]),
-      ) ||
-      "Lecture";
-
     const event: EventBlock = {
-      start: startIndex,
-      span: Math.max(1, Math.ceil((endMinute - startMinute) / 60)),
-      startMinute,
-      endMinute,
-      code,
-      title,
-      titleEn,
-      room,
-      type,
-      timeLabel,
-      color: DAY_COLOR_FALLBACKS[dayIndex],
+      start: parsed.startIndex,
+      span: Math.max(1, Math.ceil((parsed.endMinute - parsed.startMinute) / 60)),
+      startMinute: parsed.startMinute,
+      endMinute: parsed.endMinute,
+      code: parsed.code,
+      title: parsed.title,
+      titleEn: parsed.titleEn,
+      room: parsed.room,
+      type: parsed.type,
+      timeLabel: parsed.timeLabel,
+      color: DAY_COLOR_FALLBACKS[parsed.dayIndex],
     };
 
-    grouped[dayIndex].push(event);
+    grouped[parsed.dayIndex].push(event);
   }
 
   return grouped;
@@ -520,6 +693,7 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
   }
 
   let displayedEventsByDay: EventBlock[][] = Array.from({ length: 7 }, () => []);
+  let unscheduledCourses: UnscheduledCourse[] = [];
   let resyncStatus: "idle" | "success" | "failed" = "idle";
   let fetchErrorMessage: string | null = null;
 
@@ -568,6 +742,9 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
   const normalized = toEventsByDay(scheduleData);
   const hasAnyEvents = normalized.some((day) => day.length > 0);
   const parsedEventCount = normalized.reduce((total, day) => total + day.length, 0);
+  unscheduledCourses = rawRows
+    .map((row) => (resolveEventRecord(row) === null ? resolveUnscheduledCourse(row) : null))
+    .filter((course): course is UnscheduledCourse => course !== null);
   const responsePeriod = resolveResponsePeriod(rawRows);
   const periodMismatch =
     responsePeriod !== null && (responsePeriod.year !== year || responsePeriod.semester !== semester);
@@ -583,6 +760,8 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
       rawRowsCount={rawRows.length}
       parsedEventCount={parsedEventCount}
       displayedEventsByDay={displayedEventsByDay}
+      unscheduledCourses={unscheduledCourses}
+      unscheduledCourses={unscheduledCourses}
       responsePeriod={responsePeriod}
       periodMismatch={periodMismatch}
       resyncStatus={resyncStatus}
