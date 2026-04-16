@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toPng } from "html-to-image";
 
 type DayConfig = {
@@ -437,12 +438,61 @@ export function ScheduleBoard({
   resyncStatus,
   fetchErrorMessage,
 }: ScheduleBoardProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const tableSectionRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<BoardTheme>("forest");
   const [selectedLanguage, setSelectedLanguage] = useState<BoardLanguage>("th");
-  const [openMenu, setOpenMenu] = useState<"language" | "theme" | null>(null);
+  const [openMenu, setOpenMenu] = useState<"language" | "theme" | "period" | null>(null);
+
+  // Generate available periods
+  const generateAvailablePeriods = () => {
+    const periods: Array<{ year: number; semester: number; label: string }> = [];
+    const currentDate = new Date();
+    const currentAcademicYear = currentDate.getFullYear() + 543;
+    
+    // Generate from current year backwards 3 years
+    for (let y = currentAcademicYear; y >= currentAcademicYear - 3; y--) {
+      // Summer (semester 0)
+      periods.push({
+        year: y,
+        semester: 0,
+        label: `${y} Summer (ฤดูร้อน)`,
+      });
+      // Semester 1
+      periods.push({
+        year: y,
+        semester: 1,
+        label: `${y} Semester 1 (เทอม 1)`,
+      });
+      // Semester 2
+      periods.push({
+        year: y,
+        semester: 2,
+        label: `${y} Semester 2 (เทอม 2)`,
+      });
+    }
+
+    return periods;
+  };
+
+  const availablePeriods = generateAvailablePeriods();
+  const currentPeriodLabel = availablePeriods.find(
+    (p) => p.year === year && p.semester === semester
+  )?.label || `${year} Period`;
+
+  const handlePeriodSelect = (selectedYear: number, selectedSemester: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("year", String(selectedYear));
+    params.set("semester", String(selectedSemester));
+    params.set("resync", "1"); // Force resync
+    const newUrl = `/schedule?${params.toString()}`;
+    // Use window.location for hard refresh
+    window.location.href = newUrl;
+    setOpenMenu(null);
+  };
 
   const activeTheme = BOARD_THEMES[selectedTheme];
   const themeEntries = Object.entries(BOARD_THEMES) as [BoardTheme, ThemeConfig][];
@@ -556,6 +606,47 @@ export function ScheduleBoard({
       <div className={`pointer-events-none absolute -right-32 -bottom-32 h-96 w-96 rounded-full blur-3xl ${activeTheme.orbBottom}`} />
       <div className="mx-auto w-full max-w-[1600px]">
         <div ref={controlsRef} className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setOpenMenu((current) => (current === "period" ? null : "period"))}
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-amber-200/70 bg-gradient-to-r from-white via-amber-50 to-white px-4 text-sm font-semibold text-neutral-700 shadow-[0_10px_24px_-16px_rgba(217,119,6,0.45)] backdrop-blur-sm transition hover:-translate-y-[1px] hover:shadow-[0_14px_28px_-18px_rgba(217,119,6,0.55)]"
+            >
+              <span>📅 {currentPeriodLabel}</span>
+            </button>
+
+            {openMenu === "period" ? (
+              <div
+                className="absolute left-0 top-[calc(100%+0.5rem)] z-40 min-w-fit overflow-hidden rounded-2xl border border-amber-200/60 bg-white/95 p-2 shadow-[0_24px_40px_-24px_rgba(15,23,42,0.45)] backdrop-blur max-h-72 overflow-y-auto"
+                role="listbox"
+              >
+                {availablePeriods.map((period) => {
+                  const isSelected =
+                    period.year === year && period.semester === semester;
+
+                  return (
+                    <button
+                      key={`${period.year}-${period.semester}`}
+                      type="button"
+                      onClick={() =>
+                        handlePeriodSelect(period.year, period.semester)
+                      }
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm transition whitespace-nowrap ${
+                        isSelected
+                          ? "bg-amber-100 text-amber-950 font-semibold"
+                          : "text-neutral-700 hover:bg-amber-50"
+                      }`}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      {period.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+
           <FancyDropdown
             title="ภาษา"
             value={selectedLanguage}
@@ -615,24 +706,6 @@ export function ScheduleBoard({
         </div>
 
         <div className="relative z-10">
-          {fetchErrorMessage ? (
-            <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm">
-              {fetchErrorMessage}
-            </div>
-          ) : null}
-
-          {resyncStatus === "success" ? (
-            <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50/95 px-4 py-3 text-sm text-emerald-900 shadow-sm">
-              สั่ง KU Resync สำเร็จแล้ว และกำลังแสดงข้อมูลล่าสุดจากระบบ
-            </div>
-          ) : null}
-
-          {resyncStatus === "failed" ? (
-            <div className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-              สั่ง KU Resync ไม่สำเร็จ ลองใหม่ด้วย query `resync=1` อีกครั้ง หรือเช็กสิทธิ์ token
-            </div>
-          ) : null}
-
           <section
             ref={tableSectionRef}
             className={`overflow-hidden rounded-xl border shadow-[0_24px_70px_-28px_rgba(0,0,0,0.35)] backdrop-blur-sm ${activeTheme.sectionBorder} ${activeTheme.sectionSurface}`}
@@ -640,24 +713,6 @@ export function ScheduleBoard({
           >
             <div className="overflow-x-auto lg:overflow-x-visible">
               <div className="min-w-[1200px] p-1.5 sm:p-2.5 lg:min-w-0 lg:p-3">
-                {displayedEventsByDay.every((day) => day.length === 0) ? (
-                  <div className="mb-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-800">
-                    ยังไม่มีข้อมูลตารางเรียนจริงในขณะนี้
-                  </div>
-                ) : null}
-
-                {rawRowsCount > 0 && parsedEventCount === 0 ? (
-                  <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                    ระบบดึงข้อมูลวิชาได้แล้ว แต่ยังแปลงเวลา/วันมาแสดงไม่ได้ กรุณาส่งตัวอย่างข้อมูล 1 รายการเพื่อปรับ parser เพิ่ม
-                  </div>
-                ) : null}
-
-                {periodMismatch ? (
-                  <div className="mb-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
-                    ระบบ KU ตอบข้อมูลเป็นปี {responsePeriod?.year} เทอม {responsePeriod?.semester} แม้จะร้องขอปี {year} เทอม {semester} (น่าจะเป็นข้อมูลล่าสุดจากฝั่งมหาวิทยาลัย)
-                  </div>
-                ) : null}
-
                 <div className={`grid grid-cols-[96px_repeat(12,minmax(90px,1fr))] gap-px p-px lg:grid-cols-[96px_repeat(12,minmax(0,1fr))] ${activeTheme.gridBorder}`}>
                   <div className={`px-3 py-2 text-left text-xs font-bold uppercase text-white ${activeTheme.headerBg}`}>
                     Day / Time

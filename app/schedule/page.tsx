@@ -5,6 +5,8 @@ import { fetchKuGroupCourse, triggerKuProfileResync } from "@/lib/ku-api";
 import { ScheduleBoard } from "@/components/features/schedule/schedule-board";
 import { waitForSkeleton } from "@/lib/skeleton-delay";
 
+export const revalidate = 0; // No caching - always fetch fresh data
+
 export const metadata: Metadata = {
   title: "Schedule",
   description: "ตารางเรียนเฉพาะบัญชีผู้ใช้ KU Nisit Table",
