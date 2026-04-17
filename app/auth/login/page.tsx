@@ -5,8 +5,25 @@ import { LoginModal } from "@/components/features/auth/login-modal";
 import { waitForSkeleton } from "@/lib/skeleton-delay";
 
 export const metadata: Metadata = {
-  title: "Login",
-  description: "เข้าสู่ระบบ KU Nisit Table เพื่อตรวจสอบและจัดการตารางเรียนของคุณ",
+  title: {
+    absolute: "KU Nisit Table",
+  },
+  description: "เครื่องมือเช็คตารางเรียนและวางแผนการเรียนสำหรับนิสิตมหาวิทยาลัยเกษตรศาสตร์ (มก.) ดึงข้อมูลโดยตรงจากระบบ my.ku.th ใช้งานง่าย สะดวก รวดเร็ว",
+  openGraph: {
+    title: "KU Nisit Table | เช็คตารางเรียน ม.เกษตร",
+    description: "เครื่องมือเช็คตารางเรียนและวางแผนการเรียนสำหรับนิสิตมหาวิทยาลัยเกษตรศาสตร์ (มก.) ดึงข้อมูลโดยตรงจากระบบ my.ku.th ใช้งานง่าย สะดวก รวดเร็ว",
+    url: "/auth/login",
+    images: [
+      {
+        url: "/image/kunisittable.png",
+        width: 1200,
+        height: 630,
+        alt: "KU Nisit Table",
+      },
+    ],
+    locale: "th_TH",
+    type: "website",
+  },
   alternates: {
     canonical: "/auth/login",
   },

@@ -136,7 +136,7 @@ export function LoginModal() {
             </button>
           </form>
 
-        <footer className="mt-6 rounded-xl bg-gradient-to-r from-[#2f9e33] to-[#1f7d27] px-4 py-3 text-xs leading-relaxed text-white">
+        <footer data-nosnippet className="mt-6 rounded-xl bg-gradient-to-r from-[#2f9e33] to-[#1f7d27] px-4 py-3 text-xs leading-relaxed text-white">
             <p className="font-medium tracking-tight text-[14px]">
               นี่คือ <span className="text-amber-300">เว็บไซต์ไม่เป็นทางการ</span> ของ KU Nisit Table
             </p>
