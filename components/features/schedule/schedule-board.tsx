@@ -649,19 +649,63 @@ export function ScheduleBoard({
 
     setIsExporting(true);
 
-    try {
-      const captureWidth = Math.max(exportNode.scrollWidth, exportNode.offsetWidth);
-      const captureHeight = Math.max(exportNode.scrollHeight, exportNode.offsetHeight);
+    // Find the overflow-x-auto scroll container inside the section
+    const scrollContainer = exportNode.querySelector<HTMLElement>(".overflow-x-auto");
 
-      const dataUrl = await toPng(exportNode, {
+    // Use at least 1500px so the 12 time-columns are wide enough (~117px each)
+    // Mobile scrollWidth is only ~1200px which makes columns look squeezed
+    const fullScrollWidth = Math.max(
+      scrollContainer ? scrollContainer.scrollWidth : exportNode.scrollWidth,
+      1500
+    );
+    const fullScrollHeight = exportNode.scrollHeight;
+
+    // ── Clone the section element ────────────────────────────────────────────
+    const clone = exportNode.cloneNode(true) as HTMLElement;
+
+    // Place clone at top-left of viewport so the browser actually renders it
+    clone.style.position = "fixed";
+    clone.style.top = "0";
+    clone.style.left = "0";
+    clone.style.width = `${fullScrollWidth}px`;
+    clone.style.height = `${fullScrollHeight}px`;
+    clone.style.overflow = "visible";
+    clone.style.borderRadius = "0";
+    clone.style.zIndex = "9999";
+    clone.style.pointerEvents = "none";
+
+    // Fix the overflow-x-auto wrapper inside the clone
+    const clonedScroll = clone.querySelector<HTMLElement>(".overflow-x-auto");
+    if (clonedScroll) {
+      clonedScroll.style.overflow = "visible";
+      clonedScroll.style.width = `${fullScrollWidth}px`;
+
+      // Also expand the inner content div so grid `fr` units span the full width
+      const clonedInner = clonedScroll.firstElementChild as HTMLElement | null;
+      if (clonedInner) {
+        clonedInner.style.width = `${fullScrollWidth}px`;
+        clonedInner.style.minWidth = "0";
+      }
+    }
+
+    document.body.appendChild(clone);
+
+    // Wait two frames to ensure the browser has painted the clone
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+
+    try {
+      const dataUrl = await toPng(clone, {
         cacheBust: true,
         pixelRatio: 2,
         backgroundColor: "#ffffff",
-        width: captureWidth,
-        height: captureHeight,
+        width: fullScrollWidth,
+        height: fullScrollHeight,
         style: {
-          width: `${captureWidth}px`,
-          height: `${captureHeight}px`,
+          overflow: "visible",
+          width: `${fullScrollWidth}px`,
+          height: `${fullScrollHeight}px`,
         },
       });
 
@@ -670,6 +714,7 @@ export function ScheduleBoard({
       link.href = dataUrl;
       link.click();
     } finally {
+      document.body.removeChild(clone);
       setIsExporting(false);
     }
   };
