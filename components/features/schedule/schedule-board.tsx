@@ -8,7 +8,7 @@ type DayConfig = {
   label: string;
 };
 
-type BoardTheme = "forest" | "sunset" | "ocean" | "mono" | "cartoon" | "dark";
+type BoardTheme = "forest" | "sunset" | "ocean" | "mono" | "cartoon" | "dark" | "aurora" | "cherry" | "latte";
 
 type BoardLanguage = "th" | "en";
 
@@ -326,6 +326,117 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-slate-100",
     ],
   },
+  aurora: {
+    label: "Aurora",
+    pageGradient: "bg-gradient-to-br from-violet-50 via-white to-teal-50",
+    pagePattern: "",
+    orbTop: "bg-violet-200/35",
+    orbBottom: "bg-teal-200/30",
+    actionButton:
+      "bg-gradient-to-b from-[#a78bfa] via-[#7c3aed] to-[#5b21b6] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.16),0_4px_0_#3b0764,0_8px_14px_rgba(91,33,182,0.28)]",
+    sectionBorder: "border-violet-300/50",
+    sectionSurface: "bg-white/95",
+    eventBorder: "border-violet-300/35",
+    eventShadow: "shadow-[0_6px_14px_rgba(124,58,237,0.12)]",
+    gridBorder: "bg-violet-100",
+    headerBg: "bg-violet-700",
+    timeCellBg: "bg-white",
+    timeCellText: "text-neutral-700",
+    bodyCellBg: "bg-white",
+    dayLabelText: "text-violet-900",
+    dayColors: [
+      "bg-violet-50",
+      "bg-purple-50",
+      "bg-indigo-50",
+      "bg-teal-50",
+      "bg-cyan-50",
+      "bg-violet-100",
+      "bg-purple-100",
+    ],
+    eventColors: [
+      "bg-[#f3e8ff]",
+      "bg-[#ede9fe]",
+      "bg-[#e0e7ff]",
+      "bg-[#ccfbf1]",
+      "bg-[#cffafe]",
+      "bg-[#f5f3ff]",
+      "bg-[#faf5ff]",
+    ],
+  },
+  cherry: {
+    label: "Cherry Blossom",
+    pageGradient: "bg-gradient-to-br from-pink-50 via-white to-rose-50",
+    pagePattern: "",
+    orbTop: "bg-pink-200/35",
+    orbBottom: "bg-rose-200/30",
+    actionButton:
+      "bg-gradient-to-b from-[#f472b6] via-[#ec4899] to-[#be185d] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.16),0_4px_0_#9d174d,0_8px_14px_rgba(190,24,93,0.28)]",
+    sectionBorder: "border-pink-300/50",
+    sectionSurface: "bg-white/95",
+    eventBorder: "border-pink-300/35",
+    eventShadow: "shadow-[0_6px_14px_rgba(236,72,153,0.12)]",
+    gridBorder: "bg-pink-100",
+    headerBg: "bg-pink-600",
+    timeCellBg: "bg-white",
+    timeCellText: "text-neutral-700",
+    bodyCellBg: "bg-white",
+    dayLabelText: "text-rose-900",
+    dayColors: [
+      "bg-pink-50",
+      "bg-rose-50",
+      "bg-fuchsia-50",
+      "bg-pink-100",
+      "bg-rose-100",
+      "bg-fuchsia-100",
+      "bg-pink-50",
+    ],
+    eventColors: [
+      "bg-[#fce7f3]",
+      "bg-[#ffe4e6]",
+      "bg-[#fdf4ff]",
+      "bg-[#fce7f3]",
+      "bg-[#fff0f7]",
+      "bg-[#fde8f0]",
+      "bg-[#fef2f8]",
+    ],
+  },
+  latte: {
+    label: "Coffee Latte",
+    pageGradient: "bg-gradient-to-br from-amber-50 via-stone-50 to-orange-50",
+    pagePattern: "",
+    orbTop: "bg-amber-200/35",
+    orbBottom: "bg-orange-200/30",
+    actionButton:
+      "bg-gradient-to-b from-[#d97706] via-[#b45309] to-[#92400e] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.16),0_4px_0_#78350f,0_8px_14px_rgba(120,53,15,0.28)]",
+    sectionBorder: "border-amber-300/55",
+    sectionSurface: "bg-white/95",
+    eventBorder: "border-amber-300/40",
+    eventShadow: "shadow-[0_6px_14px_rgba(180,83,9,0.12)]",
+    gridBorder: "bg-amber-100",
+    headerBg: "bg-amber-800",
+    timeCellBg: "bg-white",
+    timeCellText: "text-neutral-700",
+    bodyCellBg: "bg-white",
+    dayLabelText: "text-amber-900",
+    dayColors: [
+      "bg-amber-50",
+      "bg-orange-50",
+      "bg-stone-100",
+      "bg-amber-100",
+      "bg-orange-100",
+      "bg-stone-50",
+      "bg-amber-50",
+    ],
+    eventColors: [
+      "bg-[#fffbeb]",
+      "bg-[#fff7ed]",
+      "bg-[#fef3c7]",
+      "bg-[#fde8b4]",
+      "bg-[#fef9ec]",
+      "bg-[#fdf6e0]",
+      "bg-[#fff8e7]",
+    ],
+  },
 };
 
 const BOARD_LANGUAGES: Record<BoardLanguage, LanguageConfig> = {
@@ -568,7 +679,7 @@ export function ScheduleBoard({
     setOpenMenu(null);
   };
 
-  const activeTheme = BOARD_THEMES[selectedTheme];
+  const activeTheme = BOARD_THEMES[selectedTheme] ?? BOARD_THEMES.forest;
   const themeEntries = Object.entries(BOARD_THEMES) as [BoardTheme, ThemeConfig][];
   const activeLanguage = BOARD_LANGUAGES[selectedLanguage];
   const languageEntries = Object.entries(BOARD_LANGUAGES) as [BoardLanguage, LanguageConfig][];
