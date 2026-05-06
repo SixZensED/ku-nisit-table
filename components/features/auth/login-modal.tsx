@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useLoginForm } from "../../../hooks/use-login-form";
 import { NotificationModal } from "../../ui/notification-modal";
 
@@ -189,6 +190,14 @@ export function LoginModal() {
               </div>
             </div>
         </footer>
+
+        <div className="flex justify-center gap-4 pt-4 pb-5 text-[11px] text-neutral-400">
+          <Link href="/privacy-policy" className="hover:text-emerald-700 transition">Privacy Policy</Link>
+          <span>·</span>
+          <Link href="/disclaimer" className="hover:text-emerald-700 transition">Disclaimer</Link>
+          <span>·</span>
+          <Link href="/terms" className="hover:text-emerald-700 transition">Terms of Use</Link>
+        </div>
       </div>
     </section>
   );
