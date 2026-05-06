@@ -45,6 +45,8 @@ type EventBlock = {
   titleEn: string;
   room: string;
   type: string;
+  teacherName: string;
+  teacherNameEn: string;
   timeLabel: string;
   color: string;
 };
@@ -83,6 +85,8 @@ type ParsedEventRecord = {
   titleEn: string;
   room: string;
   type: string;
+  teacherName: string;
+  teacherNameEn: string;
   timeLabel: string;
 };
 
@@ -442,6 +446,13 @@ function resolveEventRecord(record: RawCourseRecord): ParsedEventRecord | null {
     ) ||
     "Lecture";
 
+  const teacherName =
+    asText(findField(record, ["teacher_name", "teacherName", "instructor_name", "instructorName"])) ||
+    "ติดต่อผู้สอน";
+  const teacherNameEn =
+    asText(findField(record, ["teacher_name_en", "teacherNameEn", "instructor_name_en", "instructorNameEn"])) ||
+    "Contact teacher";
+
   return {
     dayIndex,
     startMinute,
@@ -452,6 +463,8 @@ function resolveEventRecord(record: RawCourseRecord): ParsedEventRecord | null {
     titleEn,
     room,
     type,
+    teacherName,
+    teacherNameEn,
     timeLabel,
   };
 }
@@ -595,6 +608,8 @@ function toEventsByDay(rawData: unknown): EventBlock[][] {
       titleEn: parsed.titleEn,
       room: parsed.room,
       type: parsed.type,
+      teacherName: parsed.teacherName,
+      teacherNameEn: parsed.teacherNameEn,
       timeLabel: parsed.timeLabel,
       color: DAY_COLOR_FALLBACKS[parsed.dayIndex],
     };

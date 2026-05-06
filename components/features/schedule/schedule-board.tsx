@@ -32,6 +32,7 @@ type ThemeConfig = {
   dayLabelText: string;
   dayColors: string[];
   eventColors: string[];
+  teacherLinkClass: string;
 };
 
 type LanguageConfig = {
@@ -39,6 +40,7 @@ type LanguageConfig = {
   buttonLabel: string;
   blockPrimaryLabel: string;
   blockSecondaryLabel: string;
+  modalCloseLabel: string;
 };
 
 type EventBlock = {
@@ -51,8 +53,15 @@ type EventBlock = {
   titleEn: string;
   room: string;
   type: string;
+  teacherName: string;
+  teacherNameEn: string;
   timeLabel: string;
   color: string;
+};
+
+type SelectedEventDetail = {
+  dayLabel: string;
+  event: EventBlock;
 };
 
 type UnscheduledCourse = {
@@ -126,6 +135,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#bde1bc]",
       "bg-[#b4dcb4]",
     ],
+    teacherLinkClass: "text-emerald-700 decoration-emerald-300 hover:text-emerald-600",
   },
   sunset: {
     label: "Sunset Pop",
@@ -163,6 +173,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#ffe3c2]",
       "bg-[#ffebd6]",
     ],
+    teacherLinkClass: "text-orange-600 decoration-orange-300 hover:text-orange-500",
   },
   ocean: {
     label: "Ocean Cool",
@@ -200,6 +211,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#d7f0ff]",
       "bg-[#d3e7ff]",
     ],
+    teacherLinkClass: "text-sky-600 decoration-sky-300 hover:text-sky-500",
   },
   mono: {
     label: "Mono Clean",
@@ -237,6 +249,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-zinc-100",
       "bg-stone-100",
     ],
+    teacherLinkClass: "text-neutral-700 decoration-neutral-400 hover:text-neutral-600",
   },
   cartoon: {
     label: "Fantasy Animal",
@@ -281,6 +294,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#e8efff]",
       "bg-[#f0fbff]",
     ],
+    teacherLinkClass: "text-cyan-600 decoration-cyan-300 hover:text-cyan-500",
   },
   dark: {
     label: "Dark Mode",
@@ -325,6 +339,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-teal-100",
       "bg-slate-100",
     ],
+    teacherLinkClass: "text-sky-400 decoration-sky-600 hover:text-sky-300",
   },
   aurora: {
     label: "Aurora",
@@ -362,6 +377,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#f5f3ff]",
       "bg-[#faf5ff]",
     ],
+    teacherLinkClass: "text-violet-600 decoration-violet-300 hover:text-violet-500",
   },
   cherry: {
     label: "Cherry Blossom",
@@ -399,6 +415,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#fde8f0]",
       "bg-[#fef2f8]",
     ],
+    teacherLinkClass: "text-pink-600 decoration-pink-300 hover:text-pink-500",
   },
   latte: {
     label: "Coffee Latte",
@@ -436,6 +453,7 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#fdf6e0]",
       "bg-[#fff8e7]",
     ],
+    teacherLinkClass: "text-amber-700 decoration-amber-300 hover:text-amber-600",
   },
 };
 
@@ -445,12 +463,14 @@ const BOARD_LANGUAGES: Record<BoardLanguage, LanguageConfig> = {
     buttonLabel: "เซฟตารางเป็นรูป",
     blockPrimaryLabel: "ไทย",
     blockSecondaryLabel: "อังกฤษ",
+    modalCloseLabel: "ปิด",
   },
   en: {
     label: "English",
     buttonLabel: "Save timetable image",
     blockPrimaryLabel: "English",
     blockSecondaryLabel: "Thai",
+    modalCloseLabel: "Close",
   },
 };
 
@@ -590,6 +610,7 @@ export function ScheduleBoard({
     resolveBoardLanguage(searchParams.get("language")),
   );
   const [openMenu, setOpenMenu] = useState<"language" | "theme" | "period" | null>(null);
+  const [selectedEventDetail, setSelectedEventDetail] = useState<SelectedEventDetail | null>(null);
 
   const periodLabelMap =
     selectedLanguage === "th"
@@ -696,6 +717,7 @@ export function ScheduleBoard({
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setOpenMenu(null);
+        setSelectedEventDetail(null);
       }
     };
 
@@ -1020,9 +1042,12 @@ export function ScheduleBoard({
                             ];
 
                           return (
-                            <div
+                            <button
                               key={`${day.label}-${event.title}-${event.startMinute}-${eventIndex}`}
-                              className={`absolute z-10 rounded-xl border ${activeTheme.eventBorder} ${themedEventColor} p-2 ${activeTheme.eventShadow}`}
+                              type="button"
+                              onClick={() => setSelectedEventDetail({ dayLabel: day.label, event })}
+                              className={`absolute z-10 rounded-xl border ${activeTheme.eventBorder} ${themedEventColor} p-2 text-left transition hover:-translate-y-[1px] hover:brightness-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 ${activeTheme.eventShadow}`}
+                              aria-label={`${day.label} ${event.timeLabel} ${event.code} ${selectedLanguage === "th" ? event.title : event.titleEn || event.title}`}
                               style={{
                                 left: `${leftPercent}%`,
                                 width: `${widthPercent}%`,
@@ -1101,7 +1126,7 @@ export function ScheduleBoard({
                                   </span>
                                 </div>
                               </div>
-                            </div>
+                            </button>
                           );
                         })}
                       </div>
@@ -1111,6 +1136,114 @@ export function ScheduleBoard({
               </div>
             </div>
           </section>
+        </div>
+
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 transition-all duration-200 ${
+            selectedEventDetail ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          }`}
+          role="dialog"
+          aria-modal="true"
+          aria-hidden={!selectedEventDetail}
+          onClick={() => setSelectedEventDetail(null)}
+        >
+          <div
+            className={`w-full max-w-md rounded-2xl border border-neutral-200 bg-white p-5 shadow-[0_24px_60px_-22px_rgba(0,0,0,0.45)] transition-all duration-200 ${
+              selectedEventDetail ? "translate-y-0 scale-100" : "translate-y-2 scale-95"
+            }`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                  {selectedEventDetail?.dayLabel} • {selectedEventDetail?.event.timeLabel}
+                </p>
+                <h2 className="mt-1 text-xl font-bold text-neutral-900">
+                  {selectedLanguage === "th"
+                    ? selectedEventDetail?.event.title
+                    : selectedEventDetail?.event.titleEn || selectedEventDetail?.event.title}
+                </h2>
+                {selectedLanguage === "th" && selectedEventDetail?.event.titleEn ? (
+                  <p className="mt-1 text-sm text-neutral-600">{selectedEventDetail.event.titleEn}</p>
+                ) : null}
+                {selectedLanguage === "en" && selectedEventDetail?.event.title ? (
+                  <p className="mt-1 text-sm text-neutral-600">{selectedEventDetail.event.title}</p>
+                ) : null}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedEventDetail(null)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 transition hover:bg-neutral-100"
+                aria-label={activeLanguage.modalCloseLabel}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M18.3 5.71 12 12l6.3 6.29-1.42 1.42L10.59 13.4 4.29 19.7 2.88 18.3 9.17 12 2.88 5.71 4.29 4.29l6.3 6.3 6.29-6.3z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-neutral-200 bg-neutral-50 text-sm text-neutral-800 overflow-hidden">
+              <div className="flex items-center justify-between gap-4 px-3 py-2 border-b border-neutral-200/70">
+                <span className="font-medium text-neutral-600">Code</span>
+                <span className="text-right font-semibold text-neutral-900">{selectedEventDetail?.event.code || "-"}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 px-3 py-2 border-b border-neutral-200/70">
+                <span className="font-medium text-neutral-600">Room</span>
+                <span className="text-right font-semibold text-neutral-900">{selectedEventDetail?.event.room || "-"}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 px-3 py-2 border-b border-neutral-200/70">
+                <span className="font-medium text-neutral-600">Type</span>
+                <span className="text-right font-semibold text-neutral-900">{selectedEventDetail?.event.type || "-"}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 px-3 py-2 border-b border-neutral-200/70">
+                <span className="font-medium text-neutral-600">Time</span>
+                <span className="text-right font-semibold text-neutral-900">{selectedEventDetail?.event.timeLabel || "-"}</span>
+              </div>
+              {(() => {
+                const raw = selectedLanguage === "th"
+                  ? selectedEventDetail?.event.teacherName
+                  : selectedEventDetail?.event.teacherNameEn || selectedEventDetail?.event.teacherName;
+                const names = raw ? raw.split(",").map((n) => n.trim()).filter(Boolean) : [];
+                const label = selectedLanguage === "th" ? "อาจารย์" : "Instructor";
+                return (
+                  <div className="flex items-start justify-between gap-4 px-3 py-2">
+                    <span className="font-medium text-neutral-600 shrink-0 pt-0.5">{label}</span>
+                    <div className="flex flex-col items-end gap-1.5">
+                      {names.length === 0 ? (
+                        <span className="font-semibold text-neutral-900">-</span>
+                      ) : names.map((name) => (
+                        <a
+                          key={name}
+                          href={`https://www.google.com/search?q=${encodeURIComponent(name + " มหาวิทยาลัยเกษตรศาสตร์")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex items-center gap-0.5 font-semibold underline underline-offset-2 transition ${activeTheme.teacherLinkClass}`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {name}
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" aria-hidden="true" className="shrink-0 opacity-50">
+                            <path fill="currentColor" d="M14 5a1 1 0 1 1 0-2h6a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V6.414l-9.293 9.293a1 1 0 0 1-1.414-1.414L17.586 5zm-9 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4a1 1 0 1 1 2 0v4a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4h4a1 1 0 1 1 0 2z"/>
+                          </svg>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSelectedEventDetail(null)}
+              className="mt-4 inline-flex h-10 items-center justify-center rounded-full bg-neutral-900 px-5 text-sm font-semibold text-white transition hover:bg-neutral-800"
+            >
+              {activeLanguage.modalCloseLabel}
+            </button>
+          </div>
         </div>
       </div>
     </main>
