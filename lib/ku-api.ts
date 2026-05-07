@@ -40,6 +40,10 @@ async function getKuAuthContext(): Promise<KuAuthContext> {
     throw new Error("Missing student id");
   }
 
+  if (!/^b\d{10}$/i.test(studentId)) {
+    throw new Error("Invalid student id format");
+  }
+
   return { appKey, accessToken, studentId };
 }
 
