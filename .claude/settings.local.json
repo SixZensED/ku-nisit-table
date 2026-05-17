@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem \"c:\\\\Users\\\\tanap\\\\Desktop\\\\ku-nisit-table\\\\ku-nisit-table\\\\app\")",
+      "Bash(Select-Object Name)",
+      "Bash(npx tsc *)",
+      "Bash(git show *)",
+      "Read(//tmp/**)"
+    ]
+  }
+}

@@ -6,7 +6,6 @@ import { toPng } from "html-to-image";
 
 type DayConfig = {
   label: string;
-  labelTh: string;
 };
 
 type BoardTheme = "forest" | "sunset" | "ocean" | "mono" | "cartoon" | "dark" | "aurora" | "cherry" | "latte";
@@ -24,7 +23,6 @@ type ThemeConfig = {
   sectionSurface: string;
   sectionStyle?: CSSProperties;
   gridBorder: string;
-  gridLineColor: string;
   headerBg: string;
   timeCellBg: string;
   timeCellText: string;
@@ -35,15 +33,6 @@ type ThemeConfig = {
   dayColors: string[];
   eventColors: string[];
   teacherLinkClass: string;
-  gridBg: string;
-  controlButtonClass: string;
-  dropdownPanelClass: string;
-  dropdownItemActiveClass: string;
-  dropdownItemDefaultClass: string;
-  dropdownValueClass: string;
-  eventTextPrimary: string;
-  eventTextSecondary: string;
-  isDark?: boolean;
 };
 
 type LanguageConfig = {
@@ -100,62 +89,53 @@ type ScheduleBoardProps = {
 };
 
 const DAYS: DayConfig[] = [
-  { label: "MON", labelTh: "จันทร์" },
-  { label: "TUE", labelTh: "อังคาร" },
-  { label: "WED", labelTh: "พุธ" },
-  { label: "THU", labelTh: "พฤหัส" },
-  { label: "FRI", labelTh: "ศุกร์" },
-  { label: "SAT", labelTh: "เสาร์" },
-  { label: "SUN", labelTh: "อาทิตย์" },
+  { label: "MON" },
+  { label: "TUE" },
+  { label: "WED" },
+  { label: "THU" },
+  { label: "FRI" },
+  { label: "SAT" },
+  { label: "SUN" },
 ];
 
 const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
   forest: {
     label: "Green KU",
-    pageGradient: "bg-gradient-to-br from-[#f0faf0] via-white to-[#e8f5e8]",
+    pageGradient: "bg-gradient-to-br from-emerald-50 via-white to-green-50",
     pagePattern: "",
-    orbTop: "bg-[#4fbf42]/20",
-    orbBottom: "bg-[#1f7d27]/15",
+    orbTop: "bg-emerald-200/30",
+    orbBottom: "bg-green-200/25",
     actionButton:
       "bg-gradient-to-b from-[#4fbf42] via-[#2f9e33] to-[#1f7d27] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.16),0_4px_0_#16591f,0_8px_14px_rgba(16,88,36,0.24)]",
-    sectionBorder: "border-[#2f9e33]/30",
+    sectionBorder: "border-[#4fbf42]/35",
     sectionSurface: "bg-white/95",
-    eventBorder: "border-[#2f9e33]/25",
-    eventShadow: "shadow-[0_6px_14px_rgba(31,125,39,0.10)]",
-    gridBorder: "bg-[#2f9e33]/15",
-    gridLineColor: "border-[#2f9e33]/20",
-    headerBg: "bg-gradient-to-b from-[#2f9e33] to-[#1f7d27]",
+    eventBorder: "border-[#2f9e33]/20",
+    eventShadow: "shadow-[0_6px_14px_rgba(31,125,39,0.08)]",
+    gridBorder: "bg-[#d6e8d5]",
+    headerBg: "bg-[#1f7d27]",
     timeCellBg: "bg-white",
-    timeCellText: "text-[#1f7d27]",
+    timeCellText: "text-neutral-700",
     bodyCellBg: "bg-white",
-    dayLabelText: "text-[#1f7d27] font-bold",
+    dayLabelText: "text-[#14532d]",
     dayColors: [
-      "bg-[#f0faf0]",
-      "bg-[#ebf8eb]",
-      "bg-[#e5f5e5]",
-      "bg-[#dff2df]",
-      "bg-[#d9efd9]",
-      "bg-[#d3ecd3]",
-      "bg-[#cde9cd]",
+      "bg-[#eaf8e8]",
+      "bg-[#e4f5e2]",
+      "bg-[#ddf1db]",
+      "bg-[#d5ecd3]",
+      "bg-[#cde8cb]",
+      "bg-[#c4e2c2]",
+      "bg-[#badcb8]",
     ],
     eventColors: [
-      "bg-[#edfaed]",
-      "bg-[#e4f7e4]",
-      "bg-[#dbf4db]",
-      "bg-[#d2f0d2]",
-      "bg-[#c9ecc9]",
-      "bg-[#c0e8c0]",
-      "bg-[#b7e4b7]",
+      "bg-[#ecfae9]",
+      "bg-[#e1f6de]",
+      "bg-[#d8f0d5]",
+      "bg-[#d0ebcd]",
+      "bg-[#c5e6c3]",
+      "bg-[#bde1bc]",
+      "bg-[#b4dcb4]",
     ],
-    teacherLinkClass: "text-[#1f7d27] decoration-[#4fbf42]/50 hover:text-[#2f9e33]",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-[#2f9e33]/30 bg-white px-4 text-sm font-medium text-[#1f7d27] shadow-sm transition hover:bg-[#f0faf0] hover:border-[#2f9e33]/50",
-    dropdownPanelClass: "bg-white/97 border-[#2f9e33]/25 text-neutral-800",
-    dropdownItemActiveClass: "bg-[#f0faf0] text-[#1f7d27] font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-[#f0faf0]",
-    dropdownValueClass: "text-[13px] font-semibold text-[#1f7d27]",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
+    teacherLinkClass: "text-emerald-700 decoration-emerald-300 hover:text-emerald-600",
   },
   sunset: {
     label: "Sunset Pop",
@@ -170,7 +150,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
     eventBorder: "border-orange-300/35",
     eventShadow: "shadow-[0_6px_14px_rgba(234,88,12,0.12)]",
     gridBorder: "bg-orange-100",
-    gridLineColor: "border-orange-200/70",
     headerBg: "bg-orange-600",
     timeCellBg: "bg-white",
     timeCellText: "text-neutral-700",
@@ -195,14 +174,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#ffebd6]",
     ],
     teacherLinkClass: "text-orange-600 decoration-orange-300 hover:text-orange-500",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:bg-neutral-50 hover:border-neutral-300",
-    dropdownPanelClass: "bg-white/95 border-neutral-200/80 text-neutral-800",
-    dropdownItemActiveClass: "bg-neutral-100 text-neutral-950 font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-neutral-50",
-    dropdownValueClass: "text-[13px] font-semibold text-neutral-800",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
   },
   ocean: {
     label: "Ocean Cool",
@@ -217,7 +188,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
     eventBorder: "border-sky-300/40",
     eventShadow: "shadow-[0_6px_14px_rgba(3,105,161,0.12)]",
     gridBorder: "bg-sky-100",
-    gridLineColor: "border-sky-200/70",
     headerBg: "bg-sky-700",
     timeCellBg: "bg-white",
     timeCellText: "text-neutral-700",
@@ -242,14 +212,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#d3e7ff]",
     ],
     teacherLinkClass: "text-sky-600 decoration-sky-300 hover:text-sky-500",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:bg-neutral-50 hover:border-neutral-300",
-    dropdownPanelClass: "bg-white/95 border-neutral-200/80 text-neutral-800",
-    dropdownItemActiveClass: "bg-neutral-100 text-neutral-950 font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-neutral-50",
-    dropdownValueClass: "text-[13px] font-semibold text-neutral-800",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
   },
   mono: {
     label: "Mono Clean",
@@ -264,7 +226,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
     eventBorder: "border-neutral-300/70",
     eventShadow: "shadow-[0_6px_14px_rgba(38,38,38,0.12)]",
     gridBorder: "bg-neutral-200",
-    gridLineColor: "border-neutral-200",
     headerBg: "bg-neutral-800",
     timeCellBg: "bg-white",
     timeCellText: "text-neutral-700",
@@ -289,14 +250,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-stone-100",
     ],
     teacherLinkClass: "text-neutral-700 decoration-neutral-400 hover:text-neutral-600",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:bg-neutral-50 hover:border-neutral-300",
-    dropdownPanelClass: "bg-white/95 border-neutral-200/80 text-neutral-800",
-    dropdownItemActiveClass: "bg-neutral-100 text-neutral-950 font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-neutral-50",
-    dropdownValueClass: "text-[13px] font-semibold text-neutral-800",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
   },
   cartoon: {
     label: "Fantasy Animal",
@@ -318,7 +271,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
     eventBorder: "border-cyan-300/60",
     eventShadow: "shadow-[0_8px_16px_rgba(14,165,233,0.2)]",
     gridBorder: "bg-cyan-200/55",
-    gridLineColor: "border-cyan-200/60",
     headerBg: "bg-cyan-600",
     timeCellBg: "bg-white/44",
     timeCellText: "text-neutral-700",
@@ -343,14 +295,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#f0fbff]",
     ],
     teacherLinkClass: "text-cyan-600 decoration-cyan-300 hover:text-cyan-500",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:bg-neutral-50 hover:border-neutral-300",
-    dropdownPanelClass: "bg-white/95 border-neutral-200/80 text-neutral-800",
-    dropdownItemActiveClass: "bg-neutral-100 text-neutral-950 font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-neutral-50",
-    dropdownValueClass: "text-[13px] font-semibold text-neutral-800",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
   },
   dark: {
     label: "Dark Mode",
@@ -396,16 +340,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-slate-100",
     ],
     teacherLinkClass: "text-sky-400 decoration-sky-600 hover:text-sky-300",
-    gridLineColor: "border-slate-700/60",
-    gridBg: "bg-slate-900",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-slate-700 bg-slate-800 px-4 text-sm font-medium text-slate-200 shadow-sm transition hover:bg-slate-700 hover:border-slate-600",
-    dropdownPanelClass: "bg-slate-900/95 border-slate-700/80 text-slate-100",
-    dropdownItemActiveClass: "bg-slate-700 text-slate-100 font-semibold",
-    dropdownItemDefaultClass: "text-slate-300 hover:bg-slate-800",
-    dropdownValueClass: "text-[13px] font-semibold text-slate-100",
-    eventTextPrimary: "text-slate-950",
-    eventTextSecondary: "text-slate-800/80",
-    isDark: true,
   },
   aurora: {
     label: "Aurora",
@@ -420,7 +354,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
     eventBorder: "border-violet-300/35",
     eventShadow: "shadow-[0_6px_14px_rgba(124,58,237,0.12)]",
     gridBorder: "bg-violet-100",
-    gridLineColor: "border-violet-200/70",
     headerBg: "bg-violet-700",
     timeCellBg: "bg-white",
     timeCellText: "text-neutral-700",
@@ -445,14 +378,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#faf5ff]",
     ],
     teacherLinkClass: "text-violet-600 decoration-violet-300 hover:text-violet-500",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:bg-neutral-50 hover:border-neutral-300",
-    dropdownPanelClass: "bg-white/95 border-neutral-200/80 text-neutral-800",
-    dropdownItemActiveClass: "bg-neutral-100 text-neutral-950 font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-neutral-50",
-    dropdownValueClass: "text-[13px] font-semibold text-neutral-800",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
   },
   cherry: {
     label: "Cherry Blossom",
@@ -467,7 +392,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
     eventBorder: "border-pink-300/35",
     eventShadow: "shadow-[0_6px_14px_rgba(236,72,153,0.12)]",
     gridBorder: "bg-pink-100",
-    gridLineColor: "border-pink-200/70",
     headerBg: "bg-pink-600",
     timeCellBg: "bg-white",
     timeCellText: "text-neutral-700",
@@ -492,14 +416,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#fef2f8]",
     ],
     teacherLinkClass: "text-pink-600 decoration-pink-300 hover:text-pink-500",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:bg-neutral-50 hover:border-neutral-300",
-    dropdownPanelClass: "bg-white/95 border-neutral-200/80 text-neutral-800",
-    dropdownItemActiveClass: "bg-neutral-100 text-neutral-950 font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-neutral-50",
-    dropdownValueClass: "text-[13px] font-semibold text-neutral-800",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
   },
   latte: {
     label: "Coffee Latte",
@@ -514,7 +430,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
     eventBorder: "border-amber-300/40",
     eventShadow: "shadow-[0_6px_14px_rgba(180,83,9,0.12)]",
     gridBorder: "bg-amber-100",
-    gridLineColor: "border-amber-200/70",
     headerBg: "bg-amber-800",
     timeCellBg: "bg-white",
     timeCellText: "text-neutral-700",
@@ -539,14 +454,6 @@ const BOARD_THEMES: Record<BoardTheme, ThemeConfig> = {
       "bg-[#fff8e7]",
     ],
     teacherLinkClass: "text-amber-700 decoration-amber-300 hover:text-amber-600",
-    gridBg: "bg-white",
-    controlButtonClass: "inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 shadow-sm transition hover:bg-neutral-50 hover:border-neutral-300",
-    dropdownPanelClass: "bg-white/95 border-neutral-200/80 text-neutral-800",
-    dropdownItemActiveClass: "bg-neutral-100 text-neutral-950 font-semibold",
-    dropdownItemDefaultClass: "text-neutral-600 hover:bg-neutral-50",
-    dropdownValueClass: "text-[13px] font-semibold text-neutral-800",
-    eventTextPrimary: "text-neutral-950",
-    eventTextSecondary: "text-neutral-700/80",
   },
 };
 
@@ -582,7 +489,6 @@ const TIMES = [
   "19:00",
 ];
 
-
 const GRID_TOTAL_MINUTES = 12 * 60;
 
 type DropdownOption<T extends string> = {
@@ -606,120 +512,7 @@ function resolveBoardLanguage(value: string | null): BoardLanguage {
   return "th";
 }
 
-type PeriodOption = { year: number; semester: number; label: string };
-
-type PeriodComboboxProps = {
-  currentPeriodLabel: string;
-  availablePeriods: PeriodOption[];
-  year: number;
-  semester: number;
-  open: boolean;
-  onToggle: () => void;
-  onSelect: (year: number, semester: number) => void;
-  buttonClassName: string;
-  panelClassName: string;
-  activeItemClassName: string;
-  defaultItemClassName: string;
-};
-
-function PeriodCombobox({
-  currentPeriodLabel,
-  availablePeriods,
-  year,
-  semester,
-  open,
-  onToggle,
-  onSelect,
-  buttonClassName,
-  panelClassName,
-  activeItemClassName,
-  defaultItemClassName,
-}: PeriodComboboxProps) {
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const filtered = query === ""
-    ? availablePeriods
-    : availablePeriods.filter((p) => p.label.toLowerCase().includes(query.toLowerCase()));
-
-  useEffect(() => {
-    if (open) {
-      setQuery("");
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }, [open]);
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={onToggle}
-        className={buttonClassName}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <span className="text-neutral-400">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </span>
-        <span>{currentPeriodLabel}</span>
-        <span className="ml-0.5 text-neutral-400">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-            <path fill="currentColor" d="m4 6 4 4 4-4z" />
-          </svg>
-        </span>
-      </button>
-
-      {open ? (
-        <div
-          className={`absolute left-0 top-[calc(100%+0.5rem)] z-40 min-w-fit rounded-2xl border shadow-[0_16px_32px_-16px_rgba(0,0,0,0.18)] backdrop-blur ${panelClassName}`}
-          role="listbox"
-        >
-          <div className="flex items-center gap-2 border-b border-inherit px-3 py-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-neutral-400" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="ค้นหาภาคเรียน..."
-              className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-neutral-500"
-            />
-            {query && (
-              <button type="button" onClick={() => setQuery("")} className="shrink-0 text-neutral-400 hover:text-neutral-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-              </button>
-            )}
-          </div>
-          <div className="no-scrollbar max-h-60 overflow-y-auto p-1.5">
-            {filtered.length > 0 ? filtered.map((period) => {
-              const isSelected = period.year === year && period.semester === semester;
-              return (
-                <button
-                  key={`${period.year}-${period.semester}`}
-                  type="button"
-                  onClick={() => { onSelect(period.year, period.semester); setQuery(""); }}
-                  className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-1.5 text-left text-sm transition whitespace-nowrap ${
-                    isSelected ? activeItemClassName : defaultItemClassName
-                  }`}
-                  role="option"
-                  aria-selected={isSelected}
-                >
-                  <span>{period.label}</span>
-                  {isSelected && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                  )}
-                </button>
-              );
-            }) : (
-              <p className="px-3 py-2 text-sm text-neutral-400">ไม่พบภาคเรียน</p>
-            )}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-type ComboboxProps<T extends string> = {
+type FancyDropdownProps<T extends string> = {
   title: string;
   value: T;
   options: DropdownOption<T>[];
@@ -727,14 +520,10 @@ type ComboboxProps<T extends string> = {
   onToggle: () => void;
   onSelect: (value: T) => void;
   buttonClassName: string;
-  panelClassName: string;
-  activeItemClassName: string;
-  defaultItemClassName: string;
-  valueLabelClassName: string;
-  placeholder?: string;
+  menuClassName: string;
 };
 
-function Combobox<T extends string>({
+function FancyDropdown<T extends string>({
   title,
   value,
   options,
@@ -742,25 +531,9 @@ function Combobox<T extends string>({
   onToggle,
   onSelect,
   buttonClassName,
-  panelClassName,
-  activeItemClassName,
-  defaultItemClassName,
-  valueLabelClassName,
-  placeholder = "ค้นหา...",
-}: ComboboxProps<T>) {
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  menuClassName,
+}: FancyDropdownProps<T>) {
   const selectedOption = options.find((option) => option.value === value) ?? options[0];
-  const filtered = query === ""
-    ? options
-    : options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()));
-
-  useEffect(() => {
-    if (open) {
-      setQuery("");
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }, [open]);
 
   return (
     <div className="relative">
@@ -771,13 +544,13 @@ function Combobox<T extends string>({
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+        <span className="shrink-0 text-[11px] font-bold uppercase text-neutral-500">
           {title}
         </span>
-        <span className={valueLabelClassName}>
+        <span className="text-[13px] font-bold text-neutral-900">
           {selectedOption?.label}
         </span>
-        <span className="ml-0.5 text-neutral-400">
+        <span className="ml-1 text-neutral-500/90">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
             <path fill="currentColor" d="m4 6 4 4 4-4z" />
           </svg>
@@ -786,49 +559,27 @@ function Combobox<T extends string>({
 
       {open ? (
         <div
-          className={`absolute left-0 top-[calc(100%+0.5rem)] z-40 min-w-full rounded-2xl border shadow-[0_16px_32px_-16px_rgba(0,0,0,0.18)] backdrop-blur ${panelClassName}`}
+          className={`absolute left-0 top-[calc(100%+0.5rem)] z-40 min-w-full overflow-hidden rounded-2xl border bg-white/95 p-2 shadow-[0_24px_40px_-24px_rgba(15,23,42,0.45)] backdrop-blur ${menuClassName}`}
           role="listbox"
         >
-          <div className="flex items-center gap-2 border-b border-inherit px-3 py-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-neutral-400" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={placeholder}
-              className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-neutral-500"
-            />
-            {query && (
-              <button type="button" onClick={() => setQuery("")} className="shrink-0 text-neutral-400 hover:text-neutral-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          {options.map((option) => {
+            const isSelected = option.value === value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onSelect(option.value)}
+                className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm transition ${
+                  isSelected ? "bg-neutral-100 text-neutral-950" : "text-neutral-700 hover:bg-neutral-100"
+                }`}
+                role="option"
+                aria-selected={isSelected}
+              >
+                <span className="font-semibold">{option.label}</span>
               </button>
-            )}
-          </div>
-          <div className="no-scrollbar max-h-60 overflow-y-auto p-1.5">
-            {filtered.length > 0 ? filtered.map((option) => {
-              const isSelected = option.value === value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => { onSelect(option.value); setQuery(""); }}
-                  className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-1.5 text-left text-sm transition whitespace-nowrap ${
-                    isSelected ? activeItemClassName : defaultItemClassName
-                  }`}
-                  role="option"
-                  aria-selected={isSelected}
-                >
-                  <span>{option.label}</span>
-                  {isSelected && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                  )}
-                </button>
-              );
-            }) : (
-              <p className="px-3 py-2 text-sm text-neutral-400">ไม่พบรายการ</p>
-            )}
-          </div>
+            );
+          })}
         </div>
       ) : null}
     </div>
@@ -860,7 +611,6 @@ export function ScheduleBoard({
   );
   const [openMenu, setOpenMenu] = useState<"language" | "theme" | "period" | null>(null);
   const [selectedEventDetail, setSelectedEventDetail] = useState<SelectedEventDetail | null>(null);
-  
 
   const periodLabelMap =
     selectedLanguage === "th"
@@ -879,15 +629,32 @@ export function ScheduleBoard({
           defaultPeriod: "Period",
         };
 
+  // Generate available periods
   const generateAvailablePeriods = () => {
     const periods: Array<{ year: number; semester: number; label: string }> = [];
     const currentDate = new Date();
     const currentAcademicYear = currentDate.getFullYear() + 543;
 
+    // Generate from current year backwards 3 years
     for (let y = currentAcademicYear; y >= currentAcademicYear - 3; y--) {
-      periods.push({ year: y, semester: 0, label: `${y} ${periodLabelMap.summer}` });
-      periods.push({ year: y, semester: 1, label: `${y} ${periodLabelMap.semester1}` });
-      periods.push({ year: y, semester: 2, label: `${y} ${periodLabelMap.semester2}` });
+      // Summer (semester 0)
+      periods.push({
+        year: y,
+        semester: 0,
+        label: `${y} ${periodLabelMap.summer}`,
+      });
+      // Semester 1
+      periods.push({
+        year: y,
+        semester: 1,
+        label: `${y} ${periodLabelMap.semester1}`,
+      });
+      // Semester 2
+      periods.push({
+        year: y,
+        semester: 2,
+        label: `${y} ${periodLabelMap.semester2}`,
+      });
     }
 
     return periods;
@@ -904,8 +671,9 @@ export function ScheduleBoard({
     params.set("semester", String(selectedSemester));
     params.set("theme", selectedTheme);
     params.set("language", selectedLanguage);
-    params.set("resync", "1");
+    params.set("resync", "1"); // Force resync
     const newUrl = `/schedule?${params.toString()}`;
+    // Use window.location for hard refresh
     window.location.href = newUrl;
     setOpenMenu(null);
   };
@@ -929,7 +697,6 @@ export function ScheduleBoard({
     params.set("semester", String(semester));
     router.replace(`/schedule?${params.toString()}`);
     setSelectedTheme(value);
-    window.dispatchEvent(new CustomEvent('ku-theme-change', { detail: value }));
     setOpenMenu(null);
   };
 
@@ -943,6 +710,7 @@ export function ScheduleBoard({
       if (!controlsRef.current || controlsRef.current.contains(event.target as Node)) {
         return;
       }
+
       setOpenMenu(null);
     };
 
@@ -1001,6 +769,7 @@ export function ScheduleBoard({
 
     return () => {
       window.removeEventListener("pagehide", handlePageHide);
+      scheduleAuthReset();
     };
   }, []);
 
@@ -1013,16 +782,21 @@ export function ScheduleBoard({
 
     setIsExporting(true);
 
+    // Find the overflow-x-auto scroll container inside the section
     const scrollContainer = exportNode.querySelector<HTMLElement>(".overflow-x-auto");
 
+    // Use at least 1500px so the 12 time-columns are wide enough (~117px each)
+    // Mobile scrollWidth is only ~1200px which makes columns look squeezed
     const fullScrollWidth = Math.max(
       scrollContainer ? scrollContainer.scrollWidth : exportNode.scrollWidth,
       1500
     );
     const fullScrollHeight = exportNode.scrollHeight;
 
+    // ── Clone the section element ────────────────────────────────────────────
     const clone = exportNode.cloneNode(true) as HTMLElement;
 
+    // Place clone at top-left of viewport so the browser actually renders it
     clone.style.position = "fixed";
     clone.style.top = "0";
     clone.style.left = "0";
@@ -1033,11 +807,13 @@ export function ScheduleBoard({
     clone.style.zIndex = "9999";
     clone.style.pointerEvents = "none";
 
+    // Fix the overflow-x-auto wrapper inside the clone
     const clonedScroll = clone.querySelector<HTMLElement>(".overflow-x-auto");
     if (clonedScroll) {
       clonedScroll.style.overflow = "visible";
       clonedScroll.style.width = `${fullScrollWidth}px`;
 
+      // Also expand the inner content div so grid `fr` units span the full width
       const clonedInner = clonedScroll.firstElementChild as HTMLElement | null;
       if (clonedInner) {
         clonedInner.style.width = `${fullScrollWidth}px`;
@@ -1047,6 +823,7 @@ export function ScheduleBoard({
 
     document.body.appendChild(clone);
 
+    // Wait two frames to ensure the browser has painted the clone
     await new Promise<void>((resolve) =>
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
     );
@@ -1075,35 +852,54 @@ export function ScheduleBoard({
     }
   };
 
-  // suppress unused-var warnings for props used only conditionally
-  void rawRowsCount;
-  void parsedEventCount;
-  void responsePeriod;
-  void periodMismatch;
-  void resyncStatus;
-  void fetchErrorMessage;
-
   return (
     <main className={`relative min-h-screen overflow-hidden px-2 py-3 sm:px-4 lg:px-6 ${activeTheme.pageGradient} ${activeTheme.pagePattern}`}>
       <div className={`pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full blur-3xl ${activeTheme.orbTop}`} />
       <div className={`pointer-events-none absolute -right-32 -bottom-32 h-96 w-96 rounded-full blur-3xl ${activeTheme.orbBottom}`} />
       <div className="mx-auto w-full max-w-[1600px]">
-        <div ref={controlsRef} className="mb-5 flex flex-wrap items-center gap-2">
-          <PeriodCombobox
-            currentPeriodLabel={currentPeriodLabel}
-            availablePeriods={availablePeriods}
-            year={year}
-            semester={semester}
-            open={openMenu === "period"}
-            onToggle={() => setOpenMenu((current) => (current === "period" ? null : "period"))}
-            onSelect={handlePeriodSelect}
-            buttonClassName={activeTheme.controlButtonClass}
-            panelClassName={activeTheme.dropdownPanelClass}
-            activeItemClassName={activeTheme.dropdownItemActiveClass}
-            defaultItemClassName={activeTheme.dropdownItemDefaultClass}
-          />
+        <div ref={controlsRef} className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setOpenMenu((current) => (current === "period" ? null : "period"))}
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-amber-200/70 bg-gradient-to-r from-white via-amber-50 to-white px-4 text-sm font-semibold text-neutral-700 shadow-[0_10px_24px_-16px_rgba(217,119,6,0.45)] backdrop-blur-sm transition hover:-translate-y-[1px] hover:shadow-[0_14px_28px_-18px_rgba(217,119,6,0.55)]"
+            >
+              <span>📅 {currentPeriodLabel}</span>
+            </button>
 
-          <Combobox
+            {openMenu === "period" ? (
+              <div
+                className="absolute left-0 top-[calc(100%+0.5rem)] z-40 min-w-fit overflow-hidden rounded-2xl border border-amber-200/60 bg-white/95 p-2 shadow-[0_24px_40px_-24px_rgba(15,23,42,0.45)] backdrop-blur max-h-72 overflow-y-auto"
+                role="listbox"
+              >
+                {availablePeriods.map((period) => {
+                  const isSelected =
+                    period.year === year && period.semester === semester;
+
+                  return (
+                    <button
+                      key={`${period.year}-${period.semester}`}
+                      type="button"
+                      onClick={() =>
+                        handlePeriodSelect(period.year, period.semester)
+                      }
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm transition whitespace-nowrap ${
+                        isSelected
+                          ? "bg-amber-100 text-amber-950 font-semibold"
+                          : "text-neutral-700 hover:bg-amber-50"
+                      }`}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      {period.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+
+          <FancyDropdown
             title="ภาษา"
             value={selectedLanguage}
             options={languageEntries.map(([key, config]) => ({
@@ -1113,15 +909,12 @@ export function ScheduleBoard({
             open={openMenu === "language"}
             onToggle={() => setOpenMenu((current) => (current === "language" ? null : "language"))}
             onSelect={handleLanguageSelect}
-            buttonClassName={activeTheme.controlButtonClass}
-            panelClassName={activeTheme.dropdownPanelClass}
-            activeItemClassName={activeTheme.dropdownItemActiveClass}
-            defaultItemClassName={activeTheme.dropdownItemDefaultClass}
-            valueLabelClassName={activeTheme.dropdownValueClass}
+            buttonClassName="inline-flex h-11 items-center gap-2 rounded-full border border-cyan-200/70 bg-gradient-to-r from-white via-cyan-50 to-white px-4 text-sm font-semibold text-neutral-700 shadow-[0_10px_24px_-16px_rgba(14,165,233,0.45)] backdrop-blur-sm transition hover:-translate-y-[1px] hover:shadow-[0_14px_28px_-18px_rgba(14,165,233,0.55)]"
+            menuClassName="border-cyan-200/60"
           />
 
-          <Combobox
-            title="Theme"
+          <FancyDropdown
+            title="Theme ตาราง"
             value={selectedTheme}
             options={themeEntries.map(([key, config]) => ({
               value: key,
@@ -1130,18 +923,15 @@ export function ScheduleBoard({
             open={openMenu === "theme"}
             onToggle={() => setOpenMenu((current) => (current === "theme" ? null : "theme"))}
             onSelect={handleThemeSelect}
-            buttonClassName={activeTheme.controlButtonClass}
-            panelClassName={activeTheme.dropdownPanelClass}
-            activeItemClassName={activeTheme.dropdownItemActiveClass}
-            defaultItemClassName={activeTheme.dropdownItemDefaultClass}
-            valueLabelClassName={activeTheme.dropdownValueClass}
+            buttonClassName="inline-flex h-11 items-center gap-2 rounded-full border border-emerald-200/70 bg-gradient-to-r from-white via-emerald-50 to-white px-4 text-sm font-semibold text-neutral-700 shadow-[0_10px_24px_-16px_rgba(16,185,129,0.45)] backdrop-blur-sm transition hover:-translate-y-[1px] hover:shadow-[0_14px_28px_-18px_rgba(16,185,129,0.55)]"
+            menuClassName="border-emerald-200/60"
           />
 
           <button
             type="button"
             onClick={handleExport}
             disabled={isExporting}
-            className={`inline-flex h-9 items-center rounded-full px-5 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 ${activeTheme.actionButton}`}
+            className={`inline-flex h-11 items-center rounded-full px-5 text-sm font-bold text-white transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none ${activeTheme.actionButton}`}
           >
             {isExporting ? (
               "กำลังเซฟรูปภาพ..."
@@ -1167,8 +957,8 @@ export function ScheduleBoard({
             className={`overflow-hidden rounded-xl border shadow-[0_24px_70px_-28px_rgba(0,0,0,0.35)] backdrop-blur-sm ${activeTheme.sectionBorder} ${activeTheme.sectionSurface}`}
             style={activeTheme.sectionStyle}
           >
-            <div className="overflow-x-auto">
-              <div className="p-1.5 sm:p-2.5 lg:p-3">
+            <div className="overflow-x-auto lg:overflow-x-visible">
+              <div className="min-w-[1200px] p-1.5 sm:p-2.5 lg:min-w-0 lg:p-3">
                 {unscheduledCourses.length > 0 ? (
                   <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-base text-amber-900 shadow-sm">
                     <div className="text-[15px] font-semibold">
@@ -1214,116 +1004,80 @@ export function ScheduleBoard({
                   </div>
                 ) : null}
 
-                {/* If raw rows exist but parser found no events, surface an actionable hint */}
-                {rawRowsCount > 0 && parsedEventCount === 0 ? (
-                  <div className="mb-3 rounded-xl border border-yellow-400 bg-yellow-50 px-4 py-3 text-sm text-yellow-900 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-semibold">ไม่พบกิจกรรมในตาราง</div>
-                        <div className="mt-1 text-sm text-yellow-800">ระบบดึงข้อมูลเจอ แต่ไม่สามารถแยกกิจกรรมเป็นบล็อกได้ — อาจเกิดจากรูปแบบข้อมูลเปลี่ยนหรือข้อมูลไม่สมบูรณ์</div>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-                            params.set('resync', '1');
-                            window.location.href = `/schedule?${params.toString()}`;
-                          }}
-                          className="inline-flex h-9 items-center gap-2 rounded-full border border-yellow-300 bg-yellow-400/10 px-3 text-sm font-semibold text-yellow-900 shadow-sm hover:brightness-95"
-                        >
-                          รีเฟรชข้อมูล (Resync)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => window.location.href = '/auth/login'}
-                          className="inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-700 shadow-sm hover:brightness-95"
-                        >
-                          ตรวจการเข้าสู่ระบบ
-                        </button>
-                      </div>
-                    </div>
+                <div className={`grid grid-cols-[96px_repeat(12,minmax(90px,1fr))] gap-px p-px lg:grid-cols-[96px_repeat(12,minmax(0,1fr))] ${activeTheme.gridBorder}`}>
+                  <div className={`px-3 py-2 text-left text-xs font-bold uppercase text-white ${activeTheme.headerBg}`}>
+                    Day / Time
                   </div>
-                ) : null}
-
-                <div className="overflow-x-auto">
-                  <div className={`${activeTheme.gridBg} rounded-lg overflow-hidden`} style={{ minWidth: 820 }}>
-
-                    {/* Time header row */}
-                    <div className={`flex border-b ${activeTheme.gridLineColor} ${activeTheme.gridBorder}`}>
-                      <div
-                        className={`flex-shrink-0 ${activeTheme.headerBg}`}
-                        style={{ width: 72, height: 38 }}
-                      />
-                      {TIMES.map((time) => (
-                        <div
-                          key={time}
-                          className={`flex-1 flex items-center justify-center border-l border-white/20 text-[11px] font-medium tabular-nums text-white/90 ${activeTheme.headerBg}`}
-                          style={{ minWidth: 0, height: 38 }}
-                        >
-                          {time}
-                        </div>
-                      ))}
+                  {TIMES.map((time) => (
+                    <div
+                      key={time}
+                      className={`${activeTheme.timeCellBg} ${activeTheme.timeCellText} px-2 py-2 text-center text-xs font-semibold`}
+                    >
+                      {time}
                     </div>
+                  ))}
 
-                    {/* Day rows */}
-                    {DAYS.map((day, dayIndex) => (
+                  {DAYS.map((day, dayIndex) => (
+                    <div key={day.label} className="contents">
                       <div
-                        key={day.label}
-                        className={`flex border-b last:border-b-0 ${activeTheme.gridLineColor} ${activeTheme.gridBorder}`}
+                        className={`flex items-center justify-center px-3 py-3 text-sm font-bold ${activeTheme.dayLabelText} ${activeTheme.dayColors[dayIndex]}`}
                       >
-                        {/* Day label */}
-                        <div
-                          className={`flex-shrink-0 flex items-center justify-center text-[13px] font-semibold border-r ${activeTheme.gridLineColor} ${activeTheme.dayLabelText} ${activeTheme.dayColors[dayIndex]}`}
-                          style={{ width: 72, height: 100 }}
-                        >
-                          {selectedLanguage === "th" ? day.labelTh : day.label}
-                        </div>
+                        {day.label}
+                      </div>
 
-                        {/* Grid area + events */}
-                        <div className="flex-1 relative" style={{ height: 100 }}>
-                          {/* Column separators */}
-                          <div className="absolute inset-0 flex pointer-events-none">
-                            {TIMES.map((time) => (
-                              <div
-                                key={`${day.label}-${time}`}
-                                className={`flex-1 border-r last:border-r-0 ${activeTheme.gridLineColor}`}
-                              />
-                            ))}
-                          </div>
+                      <div className={`relative col-span-12 grid h-28 grid-cols-12 gap-px ${activeTheme.gridBorder}`}>
+                        {TIMES.map((time) => (
+                          <div key={`${day.label}-${time}`} className={activeTheme.bodyCellBg} />
+                        ))}
 
-                          {/* Subject blocks */}
-                          {displayedEventsByDay[dayIndex].map((event, eventIndex) => {
-                            const durationMinutes = event.endMinute - event.startMinute;
-                            const themedEventColor =
-                              activeTheme.eventColors[
-                                (dayIndex + eventIndex) % activeTheme.eventColors.length
-                              ];
+                        {displayedEventsByDay[dayIndex].map((event, eventIndex) => {
+                          const leftPercent = (event.startMinute / GRID_TOTAL_MINUTES) * 100;
+                          const widthPercent = Math.max(
+                            ((event.endMinute - event.startMinute) / GRID_TOTAL_MINUTES) * 100,
+                            100 / 24,
+                          );
+                          const themedEventColor =
+                            activeTheme.eventColors[
+                              (dayIndex + eventIndex) % activeTheme.eventColors.length
+                            ];
 
-                            return (
-                              <button
-                                key={`${day.label}-${event.title}-${event.startMinute}-${eventIndex}`}
-                                type="button"
-                                onClick={() => setSelectedEventDetail({ dayLabel: selectedLanguage === "th" ? day.labelTh : day.label, event })}
-                                className={`absolute top-1 bottom-1 z-10 rounded-lg border ${activeTheme.eventBorder} ${themedEventColor} px-2 py-1.5 text-left transition hover:brightness-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 ${activeTheme.eventShadow} overflow-hidden`}
-                                aria-label={`${selectedLanguage === "th" ? day.labelTh : day.label} ${event.timeLabel} ${event.code} ${selectedLanguage === "th" ? event.title : event.titleEn || event.title}`}
-                                style={{
-                                  left: `${(event.startMinute / (TIMES.length * 60)) * 100}%`,
-                                  width: `${(durationMinutes / (TIMES.length * 60)) * 100}%`,
-                                  minWidth: 0,
-                                }}
-                              >
-                                <div className={`h-full flex flex-col justify-between gap-0.5 text-left leading-tight ${activeTheme.eventTextPrimary}`}>
-                                  <div className={`flex min-w-0 items-start justify-between gap-1 text-[9px] font-semibold uppercase tracking-tight ${activeTheme.eventTextSecondary} sm:text-[10px]`}>
-                                    <span className="truncate whitespace-nowrap">{event.code || ""}</span>
-                                    <span className="shrink-0 ml-0.5">{event.timeLabel}</span>
-                                  </div>
+                          return (
+                            <button
+                              key={`${day.label}-${event.title}-${event.startMinute}-${eventIndex}`}
+                              type="button"
+                              onClick={() => setSelectedEventDetail({ dayLabel: day.label, event })}
+                              className={`absolute z-10 rounded-xl border ${activeTheme.eventBorder} ${themedEventColor} p-2 text-left transition hover:-translate-y-[1px] hover:brightness-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 ${activeTheme.eventShadow}`}
+                              aria-label={`${day.label} ${event.timeLabel} ${event.code} ${selectedLanguage === "th" ? event.title : event.titleEn || event.title}`}
+                              style={{
+                                left: `${leftPercent}%`,
+                                width: `${widthPercent}%`,
+                                top: 2,
+                                bottom: 2,
+                              }}
+                            >
+                              <div className="flex h-full min-h-[82px] flex-col justify-between gap-1 sm:min-h-[94px] sm:gap-1.5 text-left text-[9px] leading-tight text-neutral-950 sm:text-[10px]">
+                                <div className="flex min-w-0 items-start justify-between gap-2 text-[9px] font-semibold uppercase tracking-tight text-neutral-700/80 sm:text-[10px]">
+                                  <span className="truncate whitespace-nowrap">{event.code || ""}</span>
+                                  <span className="shrink-0">{event.timeLabel}</span>
+                                </div>
 
-                                  <div className="flex-1 min-h-0 text-left">
-                                    {selectedLanguage === "th" ? (
-                                      <>
+                                <div className="flex-1 min-h-0 py-0.25 text-left sm:py-0.5">
+                                  {selectedLanguage === "th" ? (
+                                    <>
+                                      <div
+                                        className="break-words text-[11px] font-semibold leading-snug text-neutral-950 sm:text-[12px]"
+                                        style={{
+                                          display: "-webkit-box",
+                                          WebkitBoxOrient: "vertical",
+                                          WebkitLineClamp: 2,
+                                          overflow: "hidden",
+                                        }}
+                                      >
+                                        {event.title}
+                                      </div>
+                                      {event.titleEn ? (
                                         <div
-                                          className={`break-words text-[10px] font-semibold leading-snug ${activeTheme.eventTextPrimary} sm:text-[11px]`}
+                                          className="mt-0.5 break-words text-[9px] font-medium leading-snug text-neutral-700/80 sm:text-[11px]"
                                           style={{
                                             display: "-webkit-box",
                                             WebkitBoxOrient: "vertical",
@@ -1331,70 +1085,57 @@ export function ScheduleBoard({
                                             overflow: "hidden",
                                           }}
                                         >
-                                          {event.title}
+                                          {event.titleEn}
                                         </div>
-                                        {event.titleEn ? (
-                                          <div
-                                            className={`break-words text-[9px] font-medium leading-snug ${activeTheme.eventTextSecondary} sm:text-[10px]`}
-                                            style={{
-                                              display: "-webkit-box",
-                                              WebkitBoxOrient: "vertical",
-                                              WebkitLineClamp: 1,
-                                              overflow: "hidden",
-                                            }}
-                                          >
-                                            {event.titleEn}
-                                          </div>
-                                        ) : null}
-                                      </>
-                                    ) : (
-                                      <>
-                                        {event.titleEn ? (
-                                          <div
-                                            className={`break-words text-[10px] font-semibold leading-snug ${activeTheme.eventTextPrimary} sm:text-[11px]`}
-                                            style={{
-                                              display: "-webkit-box",
-                                              WebkitBoxOrient: "vertical",
-                                              WebkitLineClamp: 2,
-                                              overflow: "hidden",
-                                            }}
-                                          >
-                                            {event.titleEn}
-                                          </div>
-                                        ) : null}
+                                      ) : null}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {event.titleEn ? (
                                         <div
-                                          className={`break-words text-[9px] font-medium leading-snug ${activeTheme.eventTextSecondary} sm:text-[10px]`}
+                                          className="break-words text-[11px] font-semibold leading-snug text-neutral-950 sm:text-[12px]"
                                           style={{
                                             display: "-webkit-box",
                                             WebkitBoxOrient: "vertical",
-                                            WebkitLineClamp: 1,
+                                            WebkitLineClamp: 2,
                                             overflow: "hidden",
                                           }}
                                         >
-                                          {event.title}
+                                          {event.titleEn}
                                         </div>
-                                      </>
-                                    )}
-                                  </div>
-
-                                  <div className={`flex items-end justify-between gap-1 text-[9px] font-medium uppercase ${activeTheme.eventTextSecondary} sm:text-[10px]`}>
-                                    <span className="truncate">{event.room}</span>
-                                    <span className={`shrink-0 font-semibold ${activeTheme.eventTextPrimary}`}>{event.type}</span>
-                                  </div>
+                                      ) : null}
+                                      <div
+                                        className="mt-0.5 break-words text-[9px] font-medium leading-snug text-neutral-700/80 sm:text-[11px]"
+                                        style={{
+                                          display: "-webkit-box",
+                                          WebkitBoxOrient: "vertical",
+                                          WebkitLineClamp: 2,
+                                          overflow: "hidden",
+                                        }}
+                                      >
+                                        {event.title}
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
-                              </button>
-                            );
-                          })}
-                        </div>
+
+                                <div className="flex items-end justify-between gap-2 text-[9px] font-medium uppercase text-neutral-700/80 sm:text-[10px]">
+                                  <span className="truncate">{event.room}</span>
+                                  <span className="shrink-0 font-semibold text-neutral-800">
+                                    {event.type}
+                                  </span>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
-                    ))}
-
-                  </div>
+                    </div>
+                  ))}
                 </div>
+              </div>
             </div>
-          </div>
           </section>
-
         </div>
 
         <div
@@ -1407,34 +1148,34 @@ export function ScheduleBoard({
           onClick={() => setSelectedEventDetail(null)}
         >
           <div
-            className={`w-full max-w-md rounded-2xl border p-5 shadow-[0_24px_60px_-22px_rgba(0,0,0,0.45)] transition-all duration-200 ${activeTheme.isDark ? "border-slate-700 bg-slate-900" : "border-neutral-200 bg-white"} ${
+            className={`w-full max-w-md rounded-2xl border border-neutral-200 bg-white p-5 shadow-[0_24px_60px_-22px_rgba(0,0,0,0.45)] transition-all duration-200 ${
               selectedEventDetail ? "translate-y-0 scale-100" : "translate-y-2 scale-95"
             }`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className={`text-xs font-semibold uppercase tracking-wide ${activeTheme.isDark ? "text-slate-400" : "text-neutral-500"}`}>
+                <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
                   {selectedEventDetail?.dayLabel} • {selectedEventDetail?.event.timeLabel}
                 </p>
-                <h2 className={`mt-1 text-xl font-bold ${activeTheme.isDark ? "text-slate-100" : "text-neutral-900"}`}>
+                <h2 className="mt-1 text-xl font-bold text-neutral-900">
                   {selectedLanguage === "th"
                     ? selectedEventDetail?.event.title
                     : selectedEventDetail?.event.titleEn || selectedEventDetail?.event.title}
                 </h2>
                 {selectedLanguage === "th" && selectedEventDetail?.event.titleEn ? (
-                  <p className={`mt-1 text-sm ${activeTheme.isDark ? "text-slate-400" : "text-neutral-600"}`}>{selectedEventDetail.event.titleEn}</p>
+                  <p className="mt-1 text-sm text-neutral-600">{selectedEventDetail.event.titleEn}</p>
                 ) : null}
                 {selectedLanguage === "en" && selectedEventDetail?.event.title ? (
-                  <p className={`mt-1 text-sm ${activeTheme.isDark ? "text-slate-400" : "text-neutral-600"}`}>{selectedEventDetail.event.title}</p>
+                  <p className="mt-1 text-sm text-neutral-600">{selectedEventDetail.event.title}</p>
                 ) : null}
               </div>
 
               <button
                 type="button"
+                onClick={() => setSelectedEventDetail(null)}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 transition hover:bg-neutral-100"
                 aria-label={activeLanguage.modalCloseLabel}
-                onClick={() => setSelectedEventDetail(null)}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                   <path

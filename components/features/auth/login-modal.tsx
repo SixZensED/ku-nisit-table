@@ -9,7 +9,7 @@ import { NotificationModal } from "../../ui/notification-modal";
 const CREATOR_GITHUB_URL = "https://github.com/SixZensED";
 const PROJECT_ISSUES_URL = "https://github.com/SixZensED/ku-nisit-table/issues";
 
-export function LoginModal() {
+export function LoginModal({ sessionExpired = false }: { sessionExpired?: boolean }) {
   const router = useRouter();
   const successHideTimerRef = useRef<number | null>(null);
   const redirectTimerRef = useRef<number | null>(null);
@@ -80,6 +80,18 @@ export function LoginModal() {
           actionLabel="ปิดหน้าต่าง"
           onAction={clearSubmitError}
         />
+
+          {sessionExpired && (
+            <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              <svg xmlns="http://www.w3.org/2000/svg" className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <div>
+                <p className="font-semibold leading-tight">Session หมดอายุ</p>
+                <p className="mt-0.5 text-amber-700">กรุณาเข้าสู่ระบบใหม่อีกครั้ง</p>
+              </div>
+            </div>
+          )}
 
           <div className="mb-6 space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-[#000000]">

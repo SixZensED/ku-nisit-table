@@ -29,15 +29,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{ reason?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
   await waitForSkeleton();
+
+  const params = await searchParams;
+  const isExpired = params?.reason === "expired";
 
   const cookieStore = await cookies();
   const hasAuth =
     Boolean(cookieStore.get("ku_access_token")?.value) &&
     Boolean(cookieStore.get("ku_student_id")?.value);
 
-  if (hasAuth) {
+  // Only auto-redirect if NOT expired — expired sessions were already cleared
+  if (hasAuth && !isExpired) {
     redirect("/schedule");
   }
 
@@ -45,7 +53,7 @@ export default async function LoginPage() {
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-green-50 px-4 py-10 sm:px-6">
       <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-emerald-200/30 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 -bottom-32 h-96 w-96 rounded-full bg-green-200/25 blur-3xl" />
-      <LoginModal />
+      <LoginModal sessionExpired={isExpired} />
     </main>
   );
 }

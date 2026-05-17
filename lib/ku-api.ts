@@ -40,7 +40,9 @@ async function getKuAuthContext(): Promise<KuAuthContext> {
     throw new Error("Missing student id");
   }
 
-  if (!/^b\d{10}$/i.test(studentId)) {
+  // Allow IDs that start with 'b' followed by 10 digits (KU format)
+  // or plain numeric IDs (our server-side login may set numeric IDs).
+  if (!/^b\d{10}$/i.test(studentId) && !/^\d+$/.test(studentId)) {
     throw new Error("Invalid student id format");
   }
 
@@ -110,6 +112,10 @@ export async function fetchKuGroupCourse({
   });
 
   const data = await response.json().catch(() => null);
+
+  if (response.status === 401 || response.status === 403) {
+    throw new Error("UNAUTHORIZED");
+  }
 
   if (!response.ok) {
     throw new Error("Failed to fetch group course data");

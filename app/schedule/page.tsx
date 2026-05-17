@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { fetchKuGroupCourse, triggerKuProfileResync } from "@/lib/ku-api";
 import { ScheduleBoard } from "@/components/features/schedule/schedule-board";
 import { waitForSkeleton } from "@/lib/skeleton-delay";
+import { SessionKeepAlive } from "@/components/ui/session-keep-alive";
 
 export const revalidate = 0; // No caching - always fetch fresh data
 
@@ -737,6 +738,9 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
       semester,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "UNAUTHORIZED") {
+      redirect("/api/auth/session-expired");
+    }
     fetchErrorMessage =
       error instanceof Error
         ? error.message === "Failed to fetch group course data"
@@ -747,18 +751,23 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
 
   if (!scheduleData) {
     return (
-      <ScheduleBoard
-        year={year}
-        semester={semester}
-        rawRowsCount={0}
-        parsedEventCount={0}
-        displayedEventsByDay={displayedEventsByDay}
-        unscheduledCourses={[]}
-        responsePeriod={null}
-        periodMismatch={false}
-        resyncStatus={resyncStatus}
-        fetchErrorMessage={fetchErrorMessage}
-      />
+      <div className="flex min-h-screen">
+        <SessionKeepAlive />
+        <div className="flex-1 min-w-0">
+          <ScheduleBoard
+            year={year}
+            semester={semester}
+            rawRowsCount={0}
+            parsedEventCount={0}
+            displayedEventsByDay={displayedEventsByDay}
+            unscheduledCourses={[]}
+            responsePeriod={null}
+            periodMismatch={false}
+            resyncStatus={resyncStatus}
+            fetchErrorMessage={fetchErrorMessage}
+          />
+        </div>
+      </div>
     );
   }
 
@@ -778,17 +787,22 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
   }
 
   return (
-    <ScheduleBoard
-      year={year}
-      semester={semester}
-      rawRowsCount={rawRows.length}
-      parsedEventCount={parsedEventCount}
-      displayedEventsByDay={displayedEventsByDay}
-      unscheduledCourses={unscheduledCourses}
-      responsePeriod={responsePeriod}
-      periodMismatch={periodMismatch}
-      resyncStatus={resyncStatus}
-      fetchErrorMessage={fetchErrorMessage}
-    />
+    <div className="flex min-h-screen">
+      <SessionKeepAlive />
+      <div className="flex-1 min-w-0">
+        <ScheduleBoard
+          year={year}
+          semester={semester}
+          rawRowsCount={rawRows.length}
+          parsedEventCount={parsedEventCount}
+          displayedEventsByDay={displayedEventsByDay}
+          unscheduledCourses={unscheduledCourses}
+          responsePeriod={responsePeriod}
+          periodMismatch={periodMismatch}
+          resyncStatus={resyncStatus}
+          fetchErrorMessage={fetchErrorMessage}
+        />
+      </div>
+    </div>
   );
 }
